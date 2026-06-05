@@ -391,6 +391,7 @@ function showView(name, title) {
     appShell.classList.remove("is-dragging");
     loginWorkspace.style.removeProperty("--login-sheet-shift");
     loginSwipeButton.setAttribute("aria-expanded", "false");
+    loginSheetProgress = 0;
   }
 }
 
@@ -399,6 +400,7 @@ function openLoginSheet() {
   loginWorkspace.style.removeProperty("--login-sheet-shift");
   appShell.classList.add("login-open");
   loginSwipeButton.setAttribute("aria-expanded", "true");
+  loginSheetProgress = 1;
 }
 
 function closeLoginSheet() {
@@ -406,6 +408,7 @@ function closeLoginSheet() {
   loginWorkspace.style.removeProperty("--login-sheet-shift");
   appShell.classList.remove("login-open");
   loginSwipeButton.setAttribute("aria-expanded", "false");
+  loginSheetProgress = 0;
 }
 
 function renderSchoolPicker() {
@@ -643,7 +646,7 @@ document.querySelector("#login-form").addEventListener("submit", (event) => {
 
 let loginDragStart = null;
 let loginDragCurrent = null;
-let loginWheelProgress = 0;
+let loginSheetProgress = 0;
 let loginWheelTimer = null;
 
 loginSwipeButton.addEventListener("click", openLoginSheet);
@@ -698,51 +701,20 @@ appShell.addEventListener("wheel", (event) => {
   if (appShell.classList.contains("focus-mode")) return;
   if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
 
-  const isSwipeUp = event.deltaY > 0;
-  const isOpen = appShell.classList.contains("login-open");
-  if (isOpen && event.deltaY < 0) {
-    event.preventDefault();
-    loginWheelProgress += Math.min(64, Math.abs(event.deltaY));
-    const dismiss = Math.min(420, loginWheelProgress * 3.4);
-    appShell.classList.add("is-dragging");
-    loginWorkspace.style.setProperty("--login-sheet-shift", `calc(-20vh + ${dismiss}px)`);
-
-    clearTimeout(loginWheelTimer);
-    loginWheelTimer = setTimeout(() => {
-      if (loginWheelProgress > 10) {
-        closeLoginSheet();
-      } else {
-        appShell.classList.remove("is-dragging");
-        loginWorkspace.style.removeProperty("--login-sheet-shift");
-      }
-      loginWheelProgress = 0;
-    }, 90);
-    return;
-  }
-
-  if (isOpen) return;
-
-  if (!isSwipeUp) {
-    loginWheelProgress = Math.max(0, loginWheelProgress - Math.abs(event.deltaY));
-    return;
-  }
-
   event.preventDefault();
-  loginWheelProgress += Math.min(64, Math.abs(event.deltaY));
-  const reveal = Math.min(560, loginWheelProgress * 4.4);
+  loginSheetProgress = clamp(loginSheetProgress + event.deltaY / 180, 0, 1);
+  const shift = 100 - loginSheetProgress * 120;
   appShell.classList.add("is-dragging");
-  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
+  loginWorkspace.style.setProperty("--login-sheet-shift", `${shift}vh`);
 
   clearTimeout(loginWheelTimer);
   loginWheelTimer = setTimeout(() => {
-    if (loginWheelProgress > 10) {
+    if (loginSheetProgress >= 0.18) {
       openLoginSheet();
     } else {
-      appShell.classList.remove("is-dragging");
-      loginWorkspace.style.removeProperty("--login-sheet-shift");
+      closeLoginSheet();
     }
-    loginWheelProgress = 0;
-  }, 90);
+  }, 70);
 }, { passive: false });
 
 document.querySelectorAll(".choice-card").forEach((button) => {
