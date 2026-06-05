@@ -654,8 +654,8 @@ appShell.addEventListener("pointermove", (event) => {
   if (loginDragStart === null || appShell.classList.contains("focus-mode")) return;
   loginDragCurrent = event.clientY;
   const distance = Math.max(0, loginDragStart - loginDragCurrent);
-  const preview = Math.max(0, 118 - distance * 1.85);
-  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${preview}px)`);
+  const reveal = Math.min(360, distance * 2.4);
+  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
 });
 
 appShell.addEventListener("pointerup", (event) => {
@@ -664,7 +664,7 @@ appShell.addEventListener("pointerup", (event) => {
   loginDragStart = null;
   loginDragCurrent = null;
   appShell.releasePointerCapture?.(event.pointerId);
-  if (distance > 18) {
+  if (distance > 20) {
     openLoginSheet();
   } else {
     appShell.classList.remove("is-dragging");
@@ -691,9 +691,9 @@ appShell.addEventListener("wheel", (event) => {
 
   event.preventDefault();
   loginWheelProgress += Math.min(42, Math.abs(event.deltaY));
-  const preview = Math.max(0, 118 - loginWheelProgress * 1.8);
+  const reveal = Math.min(360, loginWheelProgress * 2.8);
   appShell.classList.add("is-dragging");
-  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${preview}px)`);
+  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
 
   clearTimeout(loginWheelTimer);
   loginWheelTimer = setTimeout(() => {
