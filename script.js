@@ -662,10 +662,10 @@ appShell.addEventListener("pointermove", (event) => {
   loginDragCurrent = event.clientY;
   const distance = loginDragStart - loginDragCurrent;
   if (appShell.classList.contains("login-open")) {
-    const dismiss = Math.max(0, -distance * 1.5);
+    const dismiss = Math.max(0, -distance * 2.4);
     loginWorkspace.style.setProperty("--login-sheet-shift", `calc(-20vh + ${dismiss}px)`);
   } else {
-    const reveal = Math.min(520, Math.max(0, distance) * 2.8);
+    const reveal = Math.min(560, Math.max(0, distance) * 4.2);
     loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
   }
 });
@@ -677,9 +677,9 @@ appShell.addEventListener("pointerup", (event) => {
   loginDragStart = null;
   loginDragCurrent = null;
   appShell.releasePointerCapture?.(event.pointerId);
-  if (wasOpen && distance < -24) {
+  if (wasOpen && distance < -8) {
     closeLoginSheet();
-  } else if (!wasOpen && distance > 20) {
+  } else if (!wasOpen && distance > 8) {
     openLoginSheet();
   } else {
     appShell.classList.remove("is-dragging");
@@ -702,14 +702,14 @@ appShell.addEventListener("wheel", (event) => {
   const isOpen = appShell.classList.contains("login-open");
   if (isOpen && event.deltaY < 0) {
     event.preventDefault();
-    loginWheelProgress += Math.min(48, Math.abs(event.deltaY));
-    const dismiss = Math.min(360, loginWheelProgress * 2.2);
+    loginWheelProgress += Math.min(64, Math.abs(event.deltaY));
+    const dismiss = Math.min(420, loginWheelProgress * 3.4);
     appShell.classList.add("is-dragging");
     loginWorkspace.style.setProperty("--login-sheet-shift", `calc(-20vh + ${dismiss}px)`);
 
     clearTimeout(loginWheelTimer);
     loginWheelTimer = setTimeout(() => {
-      if (loginWheelProgress > 28) {
+      if (loginWheelProgress > 10) {
         closeLoginSheet();
       } else {
         appShell.classList.remove("is-dragging");
@@ -728,14 +728,14 @@ appShell.addEventListener("wheel", (event) => {
   }
 
   event.preventDefault();
-  loginWheelProgress += Math.min(42, Math.abs(event.deltaY));
-  const reveal = Math.min(520, loginWheelProgress * 3.2);
+  loginWheelProgress += Math.min(64, Math.abs(event.deltaY));
+  const reveal = Math.min(560, loginWheelProgress * 4.4);
   appShell.classList.add("is-dragging");
   loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
 
   clearTimeout(loginWheelTimer);
   loginWheelTimer = setTimeout(() => {
-    if (loginWheelProgress > 26) {
+    if (loginWheelProgress > 10) {
       openLoginSheet();
     } else {
       appShell.classList.remove("is-dragging");
