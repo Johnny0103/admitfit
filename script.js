@@ -288,6 +288,7 @@ const views = {
 const viewTitle = document.querySelector("#view-title");
 const appShell = document.querySelector(".app-shell");
 const restartButton = document.querySelector("#restart-button");
+const loginSwipeButton = document.querySelector("#login-swipe-button");
 const schoolPicker = document.querySelector("#school-picker");
 const schoolSearch = document.querySelector("#school-search");
 const rankingNotice = document.querySelector("#ranking-notice");
@@ -384,6 +385,15 @@ function showView(name, title) {
   viewTitle.textContent = title;
   restartButton.classList.toggle("hidden", name === "login");
   appShell.classList.toggle("focus-mode", name !== "login");
+  if (name === "login") {
+    appShell.classList.remove("login-open");
+    loginSwipeButton.setAttribute("aria-expanded", "false");
+  }
+}
+
+function openLoginSheet() {
+  appShell.classList.add("login-open");
+  loginSwipeButton.setAttribute("aria-expanded", "true");
 }
 
 function renderSchoolPicker() {
@@ -617,6 +627,23 @@ document.querySelector("#login-form").addEventListener("submit", (event) => {
     email: data.get("studentEmail")
   };
   showView("choice", "Choose a path");
+});
+
+let loginDragStart = null;
+
+loginSwipeButton.addEventListener("click", openLoginSheet);
+document.querySelector(".app-shell:not(.focus-mode) .topbar")?.addEventListener("click", openLoginSheet);
+
+appShell.addEventListener("pointerdown", (event) => {
+  if (appShell.classList.contains("focus-mode")) return;
+  loginDragStart = event.clientY;
+});
+
+appShell.addEventListener("pointerup", (event) => {
+  if (loginDragStart === null || appShell.classList.contains("focus-mode")) return;
+  const distance = loginDragStart - event.clientY;
+  loginDragStart = null;
+  if (distance > 36) openLoginSheet();
 });
 
 document.querySelectorAll(".choice-card").forEach((button) => {

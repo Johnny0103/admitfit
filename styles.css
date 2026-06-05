@@ -46,7 +46,7 @@ button {
 .app-shell:not(.focus-mode) {
   position: relative;
   grid-template-columns: 1fr;
-  place-items: center;
+  place-items: end center;
   overflow: hidden;
   background: #15221f;
 }
@@ -175,14 +175,25 @@ button {
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 26px 80px rgba(7, 15, 14, 0.32);
   backdrop-filter: blur(18px);
+  border-radius: 26px 26px 0 0;
+  transform: translateY(calc(100% - 150px));
+  transition: transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1), background 220ms ease;
+  touch-action: pan-y;
+}
+
+.app-shell.login-open:not(.focus-mode) .workspace {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .app-shell:not(.focus-mode) .topbar {
+  min-height: 84px;
   border-bottom-color: rgba(23, 33, 31, 0.08);
+  cursor: pointer;
 }
 
 .app-shell:not(.focus-mode) .view {
-  padding-top: 10px;
+  padding-top: 0;
 }
 
 .topbar {
@@ -215,6 +226,62 @@ button {
 .profile-form {
   display: grid;
   gap: 18px;
+}
+
+.app-shell:not(.focus-mode) .login-form {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 220ms ease, transform 260ms ease;
+  pointer-events: none;
+}
+
+.app-shell.login-open:not(.focus-mode) .login-form {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.swipe-handle {
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0 0 18px;
+  color: var(--accent-dark);
+  background: transparent;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.handle-bar {
+  width: 58px;
+  height: 6px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+  background: rgba(23, 76, 69, 0.28);
+}
+
+.swipe-handle strong {
+  font-size: 1rem;
+}
+
+.swipe-handle span:last-child {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.app-shell.login-open:not(.focus-mode) .swipe-handle strong {
+  font-size: 0;
+}
+
+.app-shell.login-open:not(.focus-mode) .swipe-handle strong::after {
+  content: "Sign in";
+  font-size: 1rem;
+}
+
+.app-shell.login-open:not(.focus-mode) .swipe-handle span:last-child {
+  display: none;
 }
 
 label {
