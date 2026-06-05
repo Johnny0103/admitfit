@@ -1,0 +1,78 @@
+{
+  "source": "U.S. News & World Report 2026 Best Colleges",
+  "sourceUrl": "https://www.usnews.com/best-colleges/rankings/national-universities",
+  "verifiedDate": "2026-06-05",
+  "releaseDate": "2025-09-22",
+  "sourceCheckedAt": "2026-06-05T22:22:46.567Z",
+  "note": "Rankings are maintained as site data and refreshed by the scheduled GitHub Action. U.S. News does not publish a simple open public rankings API, so set RANKING_SOURCE_URL to a licensed/maintained JSON source for fully automatic rank changes.",
+  "schools": {
+    "Stanford University": {
+      "rank": 4,
+      "category": "National Universities"
+    },
+    "University of California, Berkeley": {
+      "rank": 15,
+      "category": "National Universities"
+    },
+    "University of Southern California": {
+      "rank": 27,
+      "category": "National Universities"
+    },
+    "New York University": {
+      "rank": 32,
+      "category": "National Universities"
+    },
+    "University of Michigan": {
+      "rank": 20,
+      "category": "National Universities"
+    },
+    "Georgia Institute of Technology": {
+      "rank": 32,
+      "category": "National Universities"
+    },
+    "University of Texas at Austin": {
+      "rank": 30,
+      "category": "National Universities"
+    },
+    "Boston University": {
+      "rank": 42,
+      "category": "National Universities"
+    },
+    "Purdue University": {
+      "rank": 46,
+      "category": "National Universities"
+    },
+    "Northeastern University": {
+      "rank": 49,
+      "category": "National Universities"
+    },
+    "University of Washington": {
+      "rank": 42,
+      "category": "National Universities"
+    },
+    "Santa Clara University": {
+      "rank": 63,
+      "category": "National Universities"
+    },
+    "University of Oregon": {
+      "rank": 109,
+      "category": "National Universities"
+    },
+    "Loyola Marymount University": {
+      "rank": 91,
+      "category": "National Universities"
+    },
+    "Ohio State University": {
+      "rank": 41,
+      "category": "National Universities"
+    },
+    "University of Alabama": {
+      "rank": 171,
+      "category": "National Universities"
+    },
+    "Amherst College": {
+      "rank": 2,
+      "category": "National Liberal Arts Colleges"
+    }
+  }
+}
