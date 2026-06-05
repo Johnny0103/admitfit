@@ -287,6 +287,7 @@ const views = {
 
 const viewTitle = document.querySelector("#view-title");
 const appShell = document.querySelector(".app-shell");
+const loginWorkspace = document.querySelector(".workspace");
 const restartButton = document.querySelector("#restart-button");
 const loginSwipeButton = document.querySelector("#login-swipe-button");
 const schoolPicker = document.querySelector("#school-picker");
@@ -387,11 +388,15 @@ function showView(name, title) {
   appShell.classList.toggle("focus-mode", name !== "login");
   if (name === "login") {
     appShell.classList.remove("login-open");
+    appShell.classList.remove("is-dragging");
+    loginWorkspace.style.removeProperty("--login-sheet-shift");
     loginSwipeButton.setAttribute("aria-expanded", "false");
   }
 }
 
 function openLoginSheet() {
+  appShell.classList.remove("is-dragging");
+  loginWorkspace.style.removeProperty("--login-sheet-shift");
   appShell.classList.add("login-open");
   loginSwipeButton.setAttribute("aria-expanded", "true");
 }
@@ -630,20 +635,46 @@ document.querySelector("#login-form").addEventListener("submit", (event) => {
 });
 
 let loginDragStart = null;
+let loginDragCurrent = null;
 
 loginSwipeButton.addEventListener("click", openLoginSheet);
 document.querySelector(".app-shell:not(.focus-mode) .topbar")?.addEventListener("click", openLoginSheet);
 
 appShell.addEventListener("pointerdown", (event) => {
-  if (appShell.classList.contains("focus-mode")) return;
+  if (appShell.classList.contains("focus-mode") || appShell.classList.contains("login-open")) return;
   loginDragStart = event.clientY;
+  loginDragCurrent = event.clientY;
+  appShell.classList.add("is-dragging");
+  appShell.setPointerCapture?.(event.pointerId);
+});
+
+appShell.addEventListener("pointermove", (event) => {
+  if (loginDragStart === null || appShell.classList.contains("focus-mode")) return;
+  loginDragCurrent = event.clientY;
+  const distance = Math.max(0, loginDragStart - loginDragCurrent);
+  const preview = Math.max(0, 118 - distance * 1.85);
+  loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${preview}px)`);
 });
 
 appShell.addEventListener("pointerup", (event) => {
   if (loginDragStart === null || appShell.classList.contains("focus-mode")) return;
   const distance = loginDragStart - event.clientY;
   loginDragStart = null;
-  if (distance > 36) openLoginSheet();
+  loginDragCurrent = null;
+  appShell.releasePointerCapture?.(event.pointerId);
+  if (distance > 18) {
+    openLoginSheet();
+  } else {
+    appShell.classList.remove("is-dragging");
+    loginWorkspace.style.removeProperty("--login-sheet-shift");
+  }
+});
+
+appShell.addEventListener("pointercancel", () => {
+  loginDragStart = null;
+  loginDragCurrent = null;
+  appShell.classList.remove("is-dragging");
+  loginWorkspace.style.removeProperty("--login-sheet-shift");
 });
 
 document.querySelectorAll(".choice-card").forEach((button) => {
