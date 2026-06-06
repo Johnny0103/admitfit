@@ -11,6 +11,7 @@ const schools = [
     netCost: 28000,
     usNewsRank: 4,
     usNewsCategory: "National Universities",
+    officialDomain: "stanford.edu",
     traits: ["Research culture", "Innovation", "Interdisciplinary learning"],
     requirements: ["Common App", "Transcript", "Test optional policy review", "Two teacher recommendations", "Supplemental essays", "FAFSA or CSS Profile"]
   },
@@ -26,6 +27,7 @@ const schools = [
     netCost: 32000,
     usNewsRank: 15,
     usNewsCategory: "National Universities",
+    officialDomain: "berkeley.edu",
     traits: ["Public research", "Urban access", "High academic intensity"],
     requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Residency information", "Financial aid forms"]
   },
@@ -41,6 +43,7 @@ const schools = [
     netCost: 42000,
     usNewsRank: 27,
     usNewsCategory: "National Universities",
+    officialDomain: "usc.edu",
     traits: ["Creative programs", "Alumni network", "Urban campus"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Recommendation letter", "Supplemental essays", "Portfolio for selected majors"]
   },
@@ -56,6 +59,7 @@ const schools = [
     netCost: 43000,
     usNewsRank: 32,
     usNewsCategory: "National Universities",
+    officialDomain: "nyu.edu",
     traits: ["Global campus", "City-based learning", "Arts and business strength"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Counselor recommendation", "School-specific writing", "Financial aid forms"]
   },
@@ -71,6 +75,7 @@ const schools = [
     netCost: 33000,
     usNewsRank: 20,
     usNewsCategory: "National Universities",
+    officialDomain: "umich.edu",
     traits: ["Big campus energy", "Research depth", "Strong school spirit"],
     requirements: ["Common App or Coalition App", "Transcript", "Optional test scores", "Teacher recommendation", "Supplemental essays", "Financial aid forms"]
   },
@@ -86,6 +91,7 @@ const schools = [
     netCost: 30000,
     usNewsRank: 32,
     usNewsCategory: "National Universities",
+    officialDomain: "gatech.edu",
     traits: ["STEM focus", "Co-op culture", "Urban research"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Activities list", "Short answer essays", "Financial aid forms"]
   },
@@ -101,6 +107,7 @@ const schools = [
     netCost: 28000,
     usNewsRank: 30,
     usNewsCategory: "National Universities",
+    officialDomain: "utexas.edu",
     traits: ["Flagship resources", "Austin location", "Large academic menu"],
     requirements: ["ApplyTexas or Common App", "Transcript", "Optional test scores", "Expanded resume", "Short answers", "Financial aid forms"]
   },
@@ -116,6 +123,7 @@ const schools = [
     netCost: 39000,
     usNewsRank: 42,
     usNewsCategory: "National Universities",
+    officialDomain: "bu.edu",
     traits: ["Urban campus", "Professional pathways", "International community"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Teacher recommendation", "Writing supplement", "Financial aid forms"]
   },
@@ -131,6 +139,7 @@ const schools = [
     netCost: 24000,
     usNewsRank: 46,
     usNewsCategory: "National Universities",
+    officialDomain: "purdue.edu",
     traits: ["Engineering strength", "Practical outcomes", "Large public campus"],
     requirements: ["Common App", "Transcript", "Test score plan", "Activities list", "Major-specific review", "Financial aid forms"]
   },
@@ -146,6 +155,7 @@ const schools = [
     netCost: 41000,
     usNewsRank: 49,
     usNewsCategory: "National Universities",
+    officialDomain: "northeastern.edu",
     traits: ["Co-op program", "Urban learning", "Career focus"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Teacher recommendation", "Supplemental materials if requested", "Financial aid forms"]
   },
@@ -161,6 +171,7 @@ const schools = [
     netCost: 27000,
     usNewsRank: 42,
     usNewsCategory: "National Universities",
+    officialDomain: "washington.edu",
     traits: ["Seattle access", "Research scale", "Strong STEM pathways"],
     requirements: ["Coalition application", "Transcript self-report", "Optional test scores", "Activities list", "Personal statement", "Financial aid forms"]
   },
@@ -176,6 +187,7 @@ const schools = [
     netCost: 38000,
     usNewsRank: 63,
     usNewsCategory: "National Universities",
+    officialDomain: "scu.edu",
     traits: ["Silicon Valley", "Jesuit education", "Undergraduate focus"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Teacher recommendation", "Supplemental essay", "Financial aid forms"]
   },
@@ -191,6 +203,7 @@ const schools = [
     netCost: 25000,
     usNewsRank: 109,
     usNewsCategory: "National Universities",
+    officialDomain: "uoregon.edu",
     traits: ["Collaborative campus", "Design and journalism", "Outdoor culture"],
     requirements: ["Common App or Oregon App", "Transcript", "Optional test scores", "Activities list", "Personal statement", "Financial aid forms"]
   },
@@ -206,6 +219,7 @@ const schools = [
     netCost: 39000,
     usNewsRank: 91,
     usNewsCategory: "National Universities",
+    officialDomain: "lmu.edu",
     traits: ["Los Angeles", "Creative community", "Service-oriented learning"],
     requirements: ["Common App", "Transcript", "Optional test scores", "Recommendation letter", "Personal essay", "Financial aid forms"]
   },
@@ -221,6 +235,7 @@ const schools = [
     netCost: 26000,
     usNewsRank: 41,
     usNewsCategory: "National Universities",
+    officialDomain: "osu.edu",
     traits: ["Large flagship", "Honors pathways", "Broad major choice"],
     requirements: ["Common App", "Transcript", "Test optional policy review", "Activities list", "Major review", "Financial aid forms"]
   },
@@ -236,6 +251,7 @@ const schools = [
     netCost: 22000,
     usNewsRank: 171,
     usNewsCategory: "National Universities",
+    officialDomain: "ua.edu",
     traits: ["Scholarship options", "Large campus", "Honors college"],
     requirements: ["UA application or Common App", "Transcript", "Scholarship deadline review", "Optional test scores", "Activities list", "Financial aid forms"]
   },
@@ -251,6 +267,7 @@ const schools = [
     netCost: 25000,
     usNewsRank: 2,
     usNewsCategory: "National Liberal Arts Colleges",
+    officialDomain: "amherst.edu",
     traits: ["Open curriculum", "Small seminars", "Strong need-based aid"],
     requirements: ["Common App or Coalition App", "Transcript", "Optional test scores", "Two teacher recommendations", "Writing supplement", "Financial aid forms"]
   }
@@ -357,14 +374,12 @@ function rankLabel(school) {
   return `U.S. News #${school.usNewsRank}`;
 }
 
-function schoolIcon(index) {
-  const icons = [
-    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 45h40v8H12z" fill="#174c45"/><path d="M8 28l24-14 24 14-24 14L8 28Z" fill="#ffbf45" stroke="#174c45" stroke-width="3" stroke-linejoin="round"/><path d="M20 33v14M32 37v10M44 33v14" stroke="#174c45" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="39" r="5" fill="#f36f8c"/></svg>`,
-    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 21c8-13 28-15 38-3 9 12 3 31-12 36-16 5-34-4-36-20-.5-5 3-10 10-13Z" fill="#62cdd7"/><path d="M21 39c7 8 18 8 25 0" stroke="#174c45" stroke-width="4" stroke-linecap="round"/><circle cx="24" cy="28" r="4" fill="#174c45"/><circle cx="40" cy="28" r="4" fill="#174c45"/><path d="M47 12l4 9 10 1-8 7 2 10-8-5-9 5 2-10-8-7 10-1 5-9Z" fill="#ffbf45" stroke="#174c45" stroke-width="3" stroke-linejoin="round"/></svg>`,
-    `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="13" y="12" width="36" height="43" rx="8" fill="#ffffff" stroke="#174c45" stroke-width="4"/><path d="M22 25h20M22 35h15M22 45h18" stroke="#62cdd7" stroke-width="5" stroke-linecap="round"/><circle cx="47" cy="18" r="9" fill="#7f63ff"/><path d="M43 18l3 3 6-8" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 51c2-17 10-29 24-37" stroke="#174c45" stroke-width="5" stroke-linecap="round"/><path d="M23 35c10 1 17 6 21 16" stroke="#62cdd7" stroke-width="6" stroke-linecap="round"/><path d="M38 10l6 12 13 2-10 9 3 14-12-7-12 7 3-14-10-9 13-2 6-12Z" fill="#ffbf45" stroke="#174c45" stroke-width="3" stroke-linejoin="round"/><circle cx="18" cy="20" r="6" fill="#f36f8c"/></svg>`
-  ];
-  return icons[index % icons.length];
+function officialIconUrl(school) {
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(school.officialDomain)}&sz=128`;
+}
+
+function schoolIcon(school) {
+  return `<img src="${officialIconUrl(school)}" alt="${school.name} official site icon" loading="lazy">`;
 }
 
 function updateSelectionCount() {
@@ -443,7 +458,7 @@ function renderSchoolPicker() {
 
   schoolPicker.innerHTML = visibleSchools.map(({ school, index }) => `
     <button class="school-card ${state.selectedSchools.includes(index) ? "selected" : ""}" type="button" data-school="${index}" aria-pressed="${state.selectedSchools.includes(index)}">
-      <span class="school-icon" data-theme="${index % 4}">${schoolIcon(index)}</span>
+      <span class="school-icon" data-theme="${index % 4}">${schoolIcon(school)}</span>
       <div class="school-content">
         <strong>${school.name}</strong>
         <div class="school-meta">
@@ -467,8 +482,11 @@ function renderYourList() {
     <div class="note-list">
       ${selected.map((school, position) => `
         <article class="note-school">
-          <strong>${position + 1}. ${school.name}</strong>
-          <span>${rankLabel(school)} · ${labelize(school.region)} · ${labelize(school.size)} campus · ${school.admitRate}% admit rate</span>
+          <span class="note-school-icon">${schoolIcon(school)}</span>
+          <div>
+            <strong>${position + 1}. ${school.name}</strong>
+            <span>${rankLabel(school)} · ${labelize(school.region)} · ${labelize(school.size)} campus · ${school.admitRate}% admit rate</span>
+          </div>
         </article>
       `).join("")}
     </div>
