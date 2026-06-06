@@ -107,15 +107,9 @@
         </section>
 
         <section class="view hidden" id="school-view">
-          <p class="helper-text">Choose as many as ten colleges to evaluate. Search covers verified AdmitFit schools plus up to 1,000 live U.S. university directory results.</p>
-          <div class="school-tools" aria-label="College search">
-            <label class="search-field">
-              Search colleges
-              <input id="school-search" type="search" placeholder="Live search U.S. colleges by school, state, region, major, or website">
-            </label>
-          </div>
+          <p class="helper-text">Choose a browse mode first, then pick as many as ten colleges to evaluate.</p>
           <div class="feature-strip option-strip" aria-label="Browse colleges by">
-            <button class="mini-feature mini-feature-rank active" type="button" data-sort="ranking">
+            <button class="mini-feature mini-feature-rank" type="button" data-sort="ranking">
               <span class="mini-icon" aria-hidden="true">
                 <svg viewBox="0 0 80 80">
                   <path d="M15 54c-7-17 3-38 21-43 16-4 30 4 36 17 8 17-3 36-20 42-16 6-31-2-37-16Z" fill="#e8f7ff"/>
@@ -136,11 +130,20 @@
                 </svg>
               </span>
               <strong>Popular picks</strong>
-              <span>Switch to schools students most often compare.</span>
+              <span>See schools students most often compare.</span>
             </button>
           </div>
-          <div class="ranking-notice" id="ranking-notice"></div>
-          <div class="school-picker" id="school-picker"></div>
+          <div class="school-results-panel hidden" id="school-results-panel">
+            <p class="helper-text">Search covers verified AdmitFit schools plus up to 1,000 live U.S. university directory results.</p>
+            <div class="school-tools" aria-label="College search">
+              <label class="search-field">
+                Search colleges
+                <input id="school-search" type="search" placeholder="Live search U.S. colleges by school, state, region, major, or website">
+              </label>
+            </div>
+            <div class="ranking-notice" id="ranking-notice"></div>
+            <div class="school-picker" id="school-picker"></div>
+          </div>
           <div class="form-actions">
             <button class="secondary-button" id="school-back-button" type="button">Back</button>
             <button class="primary-button" id="school-next-button" type="button">Enter student information</button>

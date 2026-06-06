@@ -500,6 +500,7 @@ const yourListButton = document.querySelector("#your-list-button");
 const loginSwipeButton = document.querySelector("#login-swipe-button");
 const schoolPicker = document.querySelector("#school-picker");
 const schoolSearch = document.querySelector("#school-search");
+const schoolResultsPanel = document.querySelector("#school-results-panel");
 const rankingNotice = document.querySelector("#ranking-notice");
 const selectedCount = document.querySelector("#selected-count");
 const notePage = document.querySelector("#note-page");
@@ -892,6 +893,18 @@ function isFormInteraction(target) {
   return Boolean(target.closest("input, select, textarea, button, a, label"));
 }
 
+function resetSchoolBrowse() {
+  state.schoolSearch = "";
+  state.visibleSchoolLimit = 120;
+  schoolSearch.value = "";
+  schoolPicker.innerHTML = "";
+  rankingNotice.innerHTML = "";
+  schoolResultsPanel.classList.add("hidden");
+  document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
+    sortButton.classList.remove("active");
+  });
+}
+
 async function renderSchoolPicker() {
   renderRankingNotice();
   updateSelectionCount();
@@ -1258,14 +1271,8 @@ document.querySelectorAll(".choice-card").forEach((button) => {
   button.addEventListener("click", () => {
     state.flow = button.dataset.flow;
     if (state.flow === "evaluate") {
-      state.schoolSearch = "";
       state.schoolSort = "ranking";
-      state.visibleSchoolLimit = 120;
-      schoolSearch.value = "";
-      document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
-        sortButton.classList.toggle("active", sortButton.dataset.sort === state.schoolSort);
-      });
-      renderSchoolPicker();
+      resetSchoolBrowse();
       showView("school", "Select schools");
     } else {
       showView("profile", "Student information");
@@ -1283,6 +1290,7 @@ document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
   button.addEventListener("click", () => {
     state.schoolSort = button.dataset.sort;
     state.visibleSchoolLimit = 120;
+    schoolResultsPanel.classList.remove("hidden");
     document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
       sortButton.classList.toggle("active", sortButton === button);
     });
@@ -1338,6 +1346,7 @@ document.querySelector("#list-next-button").addEventListener("click", () => {
 });
 
 document.querySelector("#school-back-button").addEventListener("click", () => {
+  resetSchoolBrowse();
   showView("choice", "Choose a path");
 });
 
@@ -1370,7 +1379,7 @@ restartButton.addEventListener("click", () => {
   document.querySelector("#profile-form").reset();
   schoolSearch.value = "";
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
-    sortButton.classList.toggle("active", sortButton.dataset.sort === state.schoolSort);
+    sortButton.classList.remove("active");
   });
   showView("choice", "Choose a path");
 });
