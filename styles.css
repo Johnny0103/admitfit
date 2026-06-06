@@ -775,13 +775,48 @@ button:focus-visible {
 }
 
 .school-card {
+  position: relative;
   min-height: 170px;
-  padding: 16px;
+  padding: 16px 16px 58px;
   display: grid;
   grid-template-columns: 68px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
   overflow: hidden;
+}
+
+.school-card-hint {
+  position: absolute;
+  left: 16px;
+  bottom: 18px;
+  color: #78918b;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.school-select-button {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  min-width: 92px;
+  min-height: 38px;
+  border: 1px solid #b9ded7;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #174c45;
+  background:
+    linear-gradient(135deg, #ffffff, #fff3cc),
+    #fff;
+  box-shadow: 0 10px 20px rgba(23, 33, 31, 0.1);
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 950;
+}
+
+.school-card.selected .school-select-button {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
 }
 
 .note-page {
@@ -862,6 +897,157 @@ button:focus-visible {
   width: 30px;
   height: 30px;
   object-fit: contain;
+}
+
+.school-preview {
+  display: grid;
+  gap: 20px;
+}
+
+.preview-card {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+  gap: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 42px rgba(23, 33, 31, 0.1);
+}
+
+.preview-photos {
+  display: grid;
+  grid-template-rows: minmax(260px, 1fr) 112px;
+  gap: 12px;
+}
+
+.preview-photo {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #d6e1dc;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(98, 205, 215, 0.28), transparent 42%),
+    linear-gradient(315deg, rgba(255, 191, 69, 0.34), transparent 42%),
+    #f8faf8;
+}
+
+.preview-photo-main {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 24px;
+}
+
+.preview-photo-main::before {
+  content: "";
+  position: absolute;
+  right: -54px;
+  top: -34px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.preview-photo-main span {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #174c45;
+  background: #fff;
+  box-shadow: 0 16px 32px rgba(23, 33, 31, 0.12);
+  font-weight: 950;
+}
+
+.preview-photo-main strong,
+.preview-photo-main em {
+  position: relative;
+}
+
+.preview-photo-main strong {
+  max-width: 360px;
+  font-size: 1.55rem;
+  line-height: 1.12;
+}
+
+.preview-photo-main em {
+  color: #5c685f;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.preview-photo-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+}
+
+.preview-photo-side img {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.preview-photo-side span {
+  color: #174c45;
+  font-weight: 900;
+}
+
+.preview-copy {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.preview-copy h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+}
+
+.preview-copy p {
+  margin: 0;
+  color: #52615d;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.preview-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.preview-facts span {
+  border: 1px solid #dce6e2;
+  border-radius: 8px;
+  padding: 12px;
+  color: #52615d;
+  background: #fbfdfb;
+}
+
+.preview-facts strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #17211f;
+}
+
+.preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-select-button.selected {
+  background: var(--accent-dark);
 }
 
 .school-card.selected {
@@ -1267,6 +1453,7 @@ legend {
   .feature-strip,
   .school-board,
   .profile-stage,
+  .preview-card,
   .results-highlights {
     grid-template-columns: 1fr;
   }

@@ -488,6 +488,7 @@ const views = {
   choice: document.querySelector("#choice-view"),
   school: document.querySelector("#school-view"),
   list: document.querySelector("#list-view"),
+  schoolPreview: document.querySelector("#school-preview-view"),
   profile: document.querySelector("#profile-view"),
   results: document.querySelector("#results-view")
 };
@@ -501,6 +502,7 @@ const loginSwipeButton = document.querySelector("#login-swipe-button");
 const schoolPicker = document.querySelector("#school-picker");
 const schoolSearch = document.querySelector("#school-search");
 const schoolResultsPanel = document.querySelector("#school-results-panel");
+const schoolPreview = document.querySelector("#school-preview");
 const rankingNotice = document.querySelector("#ranking-notice");
 const selectedCount = document.querySelector("#selected-count");
 const notePage = document.querySelector("#note-page");
@@ -862,7 +864,7 @@ function showView(name, title) {
   views[name].classList.remove("hidden");
   viewTitle.textContent = title;
   restartButton.classList.toggle("hidden", name === "login");
-  yourListButton.classList.toggle("hidden", !["school", "list", "profile", "results"].includes(name));
+  yourListButton.classList.toggle("hidden", !["school", "schoolPreview", "list", "profile", "results"].includes(name));
   appShell.classList.toggle("focus-mode", name !== "login");
   if (name === "login") {
     appShell.classList.remove("login-open");
@@ -903,6 +905,105 @@ function resetSchoolBrowse() {
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
     sortButton.classList.remove("active");
   });
+}
+
+function selectSchool(index) {
+  const alreadySelected = state.selectedSchools.includes(index);
+  if (alreadySelected) {
+    state.selectedSchools = state.selectedSchools.filter((item) => item !== index);
+    return true;
+  }
+  if (state.selectedSchools.length >= 10) {
+    alert("You can choose up to ten schools.");
+    return false;
+  }
+  state.selectedSchools.push(index);
+  return true;
+}
+
+function schoolLocationLabel(school) {
+  const knownLocations = {
+    "stanford.edu": "Stanford, California",
+    "berkeley.edu": "Berkeley, California",
+    "usc.edu": "Los Angeles, California",
+    "nyu.edu": "New York, New York",
+    "umich.edu": "Ann Arbor, Michigan",
+    "gatech.edu": "Atlanta, Georgia",
+    "utexas.edu": "Austin, Texas",
+    "bu.edu": "Boston, Massachusetts",
+    "purdue.edu": "West Lafayette, Indiana",
+    "northeastern.edu": "Boston, Massachusetts",
+    "washington.edu": "Seattle, Washington",
+    "scu.edu": "Santa Clara, California",
+    "uoregon.edu": "Eugene, Oregon",
+    "lmu.edu": "Los Angeles, California",
+    "osu.edu": "Columbus, Ohio",
+    "ua.edu": "Tuscaloosa, Alabama",
+    "amherst.edu": "Amherst, Massachusetts",
+    "ucla.edu": "Los Angeles, California",
+    "ucsd.edu": "La Jolla, California",
+    "ucdavis.edu": "Davis, California",
+    "uci.edu": "Irvine, California",
+    "ucsb.edu": "Santa Barbara, California",
+    "ucmerced.edu": "Merced, California",
+    "ucr.edu": "Riverside, California",
+    "ucsc.edu": "Santa Cruz, California"
+  };
+  return knownLocations[school.officialDomain] || `${labelize(school.region)} region`;
+}
+
+function schoolPhotoPanels(school) {
+  const initials = school.name
+    .split(/[\s,-]+/)
+    .filter(Boolean)
+    .slice(0, 4)
+    .map((word) => word[0])
+    .join("");
+  const photoTone = school.source === "directory" ? "Directory campus profile" : "Official campus profile";
+  return `
+    <div class="preview-photo preview-photo-main">
+      <span>${initials}</span>
+      <strong>${school.name}</strong>
+      <em>${photoTone}</em>
+    </div>
+    <div class="preview-photo preview-photo-side">
+      ${schoolIcon(school)}
+      <span>${school.officialDomain || "Official site"}</span>
+    </div>
+  `;
+}
+
+function renderSchoolPreview(index) {
+  const school = schools[index];
+  const selected = state.selectedSchools.includes(index);
+  schoolPreview.innerHTML = `
+    <article class="preview-card">
+      <div class="preview-photos" aria-label="${school.name} official photo area">
+        ${schoolPhotoPanels(school)}
+      </div>
+      <div class="preview-copy">
+        <span class="tag ${school.source === "directory" ? "likely" : "match"}">${rankLabel(school)}</span>
+        <h3>${school.name}</h3>
+        <p>${school.name} is a ${labelize(school.size)} ${school.usNewsCategory.toLowerCase()} in the ${labelize(school.region)}. AdmitFit highlights ${school.traits.slice(0, 3).join(", ").toLowerCase()} for students comparing fit, cost, academics, and campus style.</p>
+        <div class="preview-facts">
+          <span><strong>Location</strong>${schoolLocationLabel(school)}</span>
+          <span><strong>Baseline admit rate</strong>${school.admitRate}%</span>
+          <span><strong>Campus size</strong>${labelize(school.size)}</span>
+          <span><strong>Website</strong>${school.officialDomain || "Available after search"}</span>
+        </div>
+        <div class="preview-links">
+          ${school.officialDomain ? `<a class="secondary-button" href="https://${school.officialDomain}" target="_blank" rel="noreferrer">Official website</a>` : ""}
+        </div>
+      </div>
+    </article>
+    <div class="form-actions">
+      <button class="secondary-button" id="preview-return-button" type="button">Return</button>
+      <button class="primary-button preview-select-button ${selected ? "selected" : ""}" id="preview-select-button" type="button" data-school="${index}">
+        ${selected ? "Selected" : "Select school"}
+      </button>
+    </div>
+  `;
+  showView("schoolPreview", "School preview");
 }
 
 async function renderSchoolPicker() {
@@ -975,6 +1076,8 @@ async function renderSchoolPicker() {
           ${school.source === "directory" ? `<span class="pill live-pill">Live directory result</span>` : ""}
         </div>
       </div>
+      <span class="school-card-hint">Preview</span>
+      <span class="school-select-button" data-select-school="${index}">${state.selectedSchools.includes(index) ? "Selected" : "Select"}</span>
     </button>
     `).join("") || `<p class="helper-text">No colleges match that search${scorecardSearchStatus === "error" && universityDirectoryStatus === "error" ? " because live search is unavailable right now" : ""}.</p>`}
     ${loadMore}
@@ -1305,18 +1408,29 @@ schoolPicker.addEventListener("click", (event) => {
     return;
   }
 
+  const selectButton = event.target.closest("[data-select-school]");
+  if (selectButton) {
+    const index = Number(selectButton.dataset.selectSchool);
+    if (selectSchool(index)) renderSchoolPicker();
+    return;
+  }
+
   const card = event.target.closest("[data-school]");
   if (!card) return;
   const index = Number(card.dataset.school);
-  const alreadySelected = state.selectedSchools.includes(index);
-  if (alreadySelected) {
-    state.selectedSchools = state.selectedSchools.filter((item) => item !== index);
-  } else if (state.selectedSchools.length < 10) {
-    state.selectedSchools.push(index);
-  } else {
-    alert("You can choose up to ten schools.");
+  renderSchoolPreview(index);
+});
+
+schoolPreview.addEventListener("click", (event) => {
+  if (event.target.closest("#preview-return-button")) {
+    showView("school", "Select schools");
+    return;
   }
-  renderSchoolPicker();
+
+  const selectButton = event.target.closest("#preview-select-button");
+  if (!selectButton) return;
+  const index = Number(selectButton.dataset.school);
+  if (selectSchool(index)) renderSchoolPreview(index);
 });
 
 document.querySelector("#school-next-button").addEventListener("click", () => {
