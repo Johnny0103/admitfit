@@ -281,6 +281,7 @@ const views = {
   login: document.querySelector("#login-view"),
   choice: document.querySelector("#choice-view"),
   school: document.querySelector("#school-view"),
+  list: document.querySelector("#list-view"),
   profile: document.querySelector("#profile-view"),
   results: document.querySelector("#results-view")
 };
@@ -289,11 +290,13 @@ const viewTitle = document.querySelector("#view-title");
 const appShell = document.querySelector(".app-shell");
 const loginWorkspace = document.querySelector(".workspace");
 const restartButton = document.querySelector("#restart-button");
+const yourListButton = document.querySelector("#your-list-button");
 const loginSwipeButton = document.querySelector("#login-swipe-button");
 const schoolPicker = document.querySelector("#school-picker");
 const schoolSearch = document.querySelector("#school-search");
 const rankingNotice = document.querySelector("#ranking-notice");
 const selectedCount = document.querySelector("#selected-count");
+const notePage = document.querySelector("#note-page");
 const resultsGrid = document.querySelector("#results-grid");
 const resultsSummary = document.querySelector("#results-summary");
 
@@ -385,6 +388,7 @@ function showView(name, title) {
   views[name].classList.remove("hidden");
   viewTitle.textContent = title;
   restartButton.classList.toggle("hidden", name === "login");
+  yourListButton.classList.toggle("hidden", !["school", "list", "profile", "results"].includes(name));
   appShell.classList.toggle("focus-mode", name !== "login");
   if (name === "login") {
     appShell.classList.remove("login-open");
@@ -453,6 +457,22 @@ function renderSchoolPicker() {
       </div>
     </button>
   `).join("") || `<p class="helper-text">No colleges match that search.</p>`;
+}
+
+function renderYourList() {
+  const selected = state.selectedSchools.map((index) => schools[index]);
+  notePage.innerHTML = `
+    <h3>Your AdmitFit List</h3>
+    <p>${selected.length ? "A sweet little note for the schools you picked. Keep this list balanced, brave, and practical." : "Your list is waiting for its first school. Go pick a few colleges that feel exciting and realistic."}</p>
+    <div class="note-list">
+      ${selected.map((school, position) => `
+        <article class="note-school">
+          <strong>${position + 1}. ${school.name}</strong>
+          <span>${rankLabel(school)} · ${labelize(school.region)} · ${labelize(school.size)} campus · ${school.admitRate}% admit rate</span>
+        </article>
+      `).join("")}
+    </div>
+  `;
 }
 
 function labelize(value) {
@@ -729,7 +749,7 @@ document.querySelectorAll(".choice-card").forEach((button) => {
       state.schoolSearch = "";
       state.schoolSort = "ranking";
       schoolSearch.value = "";
-      document.querySelectorAll(".sort-button").forEach((sortButton) => {
+      document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
         sortButton.classList.toggle("active", sortButton.dataset.sort === state.schoolSort);
       });
       renderSchoolPicker();
@@ -745,10 +765,10 @@ schoolSearch.addEventListener("input", (event) => {
   renderSchoolPicker();
 });
 
-document.querySelectorAll(".sort-button").forEach((button) => {
+document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
   button.addEventListener("click", () => {
     state.schoolSort = button.dataset.sort;
-    document.querySelectorAll(".sort-button").forEach((sortButton) => {
+    document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
       sortButton.classList.toggle("active", sortButton === button);
     });
     renderSchoolPicker();
@@ -773,6 +793,24 @@ schoolPicker.addEventListener("click", (event) => {
 document.querySelector("#school-next-button").addEventListener("click", () => {
   if (!state.selectedSchools.length) {
     alert("Choose at least one school to evaluate.");
+    return;
+  }
+  showView("profile", "Student information");
+});
+
+yourListButton.addEventListener("click", () => {
+  renderYourList();
+  showView("list", "Your list");
+});
+
+document.querySelector("#list-back-button").addEventListener("click", () => {
+  showView("school", "Select schools");
+});
+
+document.querySelector("#list-next-button").addEventListener("click", () => {
+  if (!state.selectedSchools.length) {
+    alert("Choose at least one school to evaluate.");
+    showView("school", "Select schools");
     return;
   }
   showView("profile", "Student information");
@@ -809,6 +847,9 @@ restartButton.addEventListener("click", () => {
   window.currentResults = [];
   document.querySelector("#profile-form").reset();
   schoolSearch.value = "";
+  document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
+    sortButton.classList.toggle("active", sortButton.dataset.sort === state.schoolSort);
+  });
   showView("choice", "Choose a path");
 });
 
