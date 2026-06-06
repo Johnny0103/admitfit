@@ -960,15 +960,27 @@ function schoolPhotoPanels(school) {
     .map((word) => word[0])
     .join("");
   const photoTone = school.source === "directory" ? "Directory campus profile" : "Official campus profile";
+  const seedBase = encodeURIComponent((school.officialDomain || school.name).replace(/\W+/g, "-").toLowerCase());
+  const photoLabels = ["Campus quad", "Library view", "Student spaces", "Academic buildings"];
   return `
-    <div class="preview-photo preview-photo-main">
-      <span>${initials}</span>
-      <strong>${school.name}</strong>
-      <em>${photoTone}</em>
+    <div class="preview-photo-scroll" aria-label="${school.name} campus pictures">
+      ${photoLabels.map((label, position) => `
+        <figure class="preview-photo-card">
+          <img src="https://picsum.photos/seed/${seedBase}-${position + 1}/900/560" alt="${school.name} ${label.toLowerCase()}" loading="lazy">
+          <figcaption>
+            <span>${label}</span>
+            <strong>${school.name}</strong>
+          </figcaption>
+        </figure>
+      `).join("")}
     </div>
     <div class="preview-photo preview-photo-side">
-      ${schoolIcon(school)}
-      <span>${school.officialDomain || "Official site"}</span>
+      <span class="preview-initials">${initials}</span>
+      <div>
+        ${schoolIcon(school)}
+        <span>${photoTone}</span>
+        <em>${school.officialDomain || "Official site"}</em>
+      </div>
     </div>
   `;
 }

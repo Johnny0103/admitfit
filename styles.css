@@ -917,8 +917,9 @@ button:focus-visible {
 
 .preview-photos {
   display: grid;
-  grid-template-rows: minmax(260px, 1fr) 112px;
+  grid-template-rows: minmax(360px, 1fr) 112px;
   gap: 12px;
+  min-width: 0;
 }
 
 .preview-photo {
@@ -937,6 +938,70 @@ button:focus-visible {
   align-content: end;
   gap: 8px;
   padding: 24px;
+}
+
+.preview-photo-scroll {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(320px, 86%);
+  gap: 14px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  padding: 0 6px 12px 0;
+  scrollbar-color: #c0822c rgba(255, 246, 213, 0.8);
+}
+
+.preview-photo-card {
+  position: relative;
+  min-height: 360px;
+  margin: 0;
+  overflow: hidden;
+  scroll-snap-align: start;
+  border: 1px solid #d6e1dc;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(23, 33, 31, 0.12);
+}
+
+.preview-photo-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  display: block;
+  object-fit: cover;
+}
+
+.preview-photo-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, rgba(6, 18, 16, 0.72));
+}
+
+.preview-photo-card figcaption {
+  position: absolute;
+  z-index: 1;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.preview-photo-card figcaption span {
+  display: block;
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 850;
+}
+
+.preview-photo-card figcaption strong {
+  display: block;
+  font-size: 1.25rem;
+  line-height: 1.12;
 }
 
 .preview-photo-main::before {
@@ -987,17 +1052,38 @@ button:focus-visible {
   padding: 18px;
 }
 
+.preview-initials {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #174c45;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(23, 33, 31, 0.1);
+  font-weight: 950;
+}
+
 .preview-photo-side img {
-  width: 52px;
-  height: 52px;
+  width: 34px;
+  height: 34px;
   border-radius: 14px;
   object-fit: contain;
   background: #fff;
 }
 
 .preview-photo-side span {
+  display: block;
   color: #174c45;
   font-weight: 900;
+}
+
+.preview-photo-side em {
+  display: block;
+  margin-top: 4px;
+  color: #65716e;
+  font-size: 0.86rem;
+  font-style: normal;
 }
 
 .preview-copy {
