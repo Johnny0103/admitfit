@@ -240,9 +240,10 @@ button {
 }
 
 .topbar {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   padding: 24px 28px;
   border-bottom: 1px solid var(--line);
@@ -254,7 +255,45 @@ button {
 .topbar-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+}
+
+.topbar-center {
+  display: flex;
+  justify-content: center;
+}
+
+.list-button {
+  min-height: 48px;
+  border: 1px solid rgba(23, 76, 69, 0.16);
+  border-radius: 999px;
+  padding: 0 20px;
+  color: #174c45;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 213, 0.96)),
+    #fff;
+  box-shadow: 0 12px 28px rgba(23, 33, 31, 0.12), inset 0 -2px 0 rgba(255, 191, 69, 0.28);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 950;
+}
+
+.list-button span {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #f36f8c;
+  box-shadow: 0 6px 14px rgba(243, 111, 140, 0.28);
+}
+
+.list-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 32px rgba(23, 33, 31, 0.14), inset 0 -2px 0 rgba(255, 191, 69, 0.36);
 }
 
 .topbar h2 {
@@ -1161,6 +1200,16 @@ legend {
   .topbar,
   .view {
     padding: 20px;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .topbar-center,
+  .topbar-actions {
+    justify-content: flex-start;
   }
 
   .choice-grid,
