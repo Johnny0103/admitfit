@@ -273,6 +273,12 @@ const schools = [
   }
 ];
 
+const UNIVERSITY_DIRECTORY_URL = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
+let universityDirectory = null;
+let universityDirectoryPromise = null;
+let universityDirectoryStatus = "idle";
+let schoolSearchToken = 0;
+
 const rankingMetadata = {
   source: "U.S. News & World Report 2026 Best Colleges",
   sourceUrl: "https://www.usnews.com/best-colleges/rankings/national-universities",
@@ -283,6 +289,7 @@ const rankingMetadata = {
 const popularityScores = [94, 92, 91, 96, 89, 86, 93, 88, 84, 87, 82, 78, 75, 76, 80, 74, 72];
 schools.forEach((school, index) => {
   school.popularity = popularityScores[index] || 70;
+  school.source = "curated";
 });
 
 const state = {
@@ -371,15 +378,103 @@ function daysSince(value) {
 }
 
 function rankLabel(school) {
+  if (!school.usNewsRank || school.usNewsRank >= 900) return school.source === "directory" ? "National directory" : "Rank pending";
   return `U.S. News #${school.usNewsRank}`;
 }
 
 function officialIconUrl(school) {
+  if (!school.officialDomain) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(school.name)}&background=e8f7ff&color=174c45&bold=true`;
+  }
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(school.officialDomain)}&sz=128`;
 }
 
 function schoolIcon(school) {
   return `<img src="${officialIconUrl(school)}" alt="${school.name} official site icon" loading="lazy">`;
+}
+
+function inferRegionFromState(stateName = "") {
+  const stateKey = stateName.toLowerCase();
+  const northeast = ["connecticut", "maine", "massachusetts", "new hampshire", "rhode island", "vermont", "new jersey", "new york", "pennsylvania"];
+  const midwest = ["illinois", "indiana", "michigan", "ohio", "wisconsin", "iowa", "kansas", "minnesota", "missouri", "nebraska", "north dakota", "south dakota"];
+  const south = ["delaware", "florida", "georgia", "maryland", "north carolina", "south carolina", "virginia", "washington, d.c.", "west virginia", "alabama", "kentucky", "mississippi", "tennessee", "arkansas", "louisiana", "oklahoma", "texas"];
+  const west = ["arizona", "colorado", "idaho", "montana", "nevada", "new mexico", "utah", "wyoming", "alaska", "california", "hawaii", "oregon", "washington"];
+  if (northeast.includes(stateKey)) return "northeast";
+  if (midwest.includes(stateKey)) return "midwest";
+  if (south.includes(stateKey)) return "south";
+  if (west.includes(stateKey)) return "west";
+  return "any";
+}
+
+function schoolFromDirectoryEntry(entry) {
+  const domain = entry.domains?.find((item) => item.endsWith(".edu")) || entry.domains?.[0] || "";
+  return {
+    name: entry.name,
+    region: inferRegionFromState(entry["state-province"]),
+    size: "medium",
+    majors: ["engineering", "business", "health", "social", "arts", "undecided"],
+    admitRate: 65,
+    avgGpa: 3.45,
+    avgSat: 1200,
+    rigor: 6,
+    netCost: 30000,
+    usNewsRank: 999,
+    usNewsCategory: "U.S. university directory",
+    officialDomain: domain,
+    popularity: 55,
+    source: "directory",
+    traits: ["U.S. university", entry["state-province"] || "Official school profile", domain || "Official website"],
+    requirements: ["Application form", "Transcript", "Test score policy review", "Activities list", "Personal essay", "Financial aid forms"]
+  };
+}
+
+async function loadUniversityDirectory() {
+  if (universityDirectory) return universityDirectory;
+  if (universityDirectoryPromise) return universityDirectoryPromise;
+
+  universityDirectoryStatus = "loading";
+  universityDirectoryPromise = fetch(UNIVERSITY_DIRECTORY_URL, { cache: "force-cache" })
+    .then((response) => {
+      if (!response.ok) throw new Error(`University directory returned ${response.status}`);
+      return response.json();
+    })
+    .then((data) => {
+      universityDirectory = data
+        .filter((entry) => entry.alpha_two_code === "US" && entry.name)
+        .map(schoolFromDirectoryEntry)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      universityDirectoryStatus = "ready";
+      return universityDirectory;
+    })
+    .catch((error) => {
+      universityDirectoryStatus = "error";
+      console.warn("Using bundled schools because the national university directory could not be loaded.", error);
+      return [];
+    });
+  return universityDirectoryPromise;
+}
+
+function addDirectoryMatches(query) {
+  if (!query || query.length < 2 || !universityDirectory?.length) return;
+  const existingNames = new Set(schools.map((school) => school.name.toLowerCase()));
+  const matches = universityDirectory
+    .filter((school) => {
+      if (existingNames.has(school.name.toLowerCase())) return false;
+      const searchable = [
+        school.name,
+        school.region,
+        school.size,
+        school.officialDomain,
+        ...school.traits
+      ].join(" ").toLowerCase();
+      return searchable.includes(query);
+    })
+    .slice(0, 80);
+
+  matches.forEach((school) => {
+    existingNames.add(school.name.toLowerCase());
+    schools.push(school);
+  });
 }
 
 function updateSelectionCount() {
@@ -434,10 +529,20 @@ function isFormInteraction(target) {
   return Boolean(target.closest("input, select, textarea, button, a, label"));
 }
 
-function renderSchoolPicker() {
+async function renderSchoolPicker() {
   renderRankingNotice();
   updateSelectionCount();
   const query = state.schoolSearch.trim().toLowerCase();
+  const token = ++schoolSearchToken;
+
+  if (query.length >= 2 && universityDirectoryStatus !== "ready") {
+    schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching the national U.S. university directory...</p>`;
+    await loadUniversityDirectory();
+    if (token !== schoolSearchToken) return;
+  }
+
+  addDirectoryMatches(query);
+
   const visibleSchools = schools
     .map((school, index) => ({ school, index }))
     .filter(({ school }) => {
@@ -446,6 +551,7 @@ function renderSchoolPicker() {
         school.name,
         school.region,
         school.size,
+        school.officialDomain,
         ...school.majors,
         ...school.traits
       ].join(" ").toLowerCase();
@@ -468,10 +574,11 @@ function renderSchoolPicker() {
           <span class="pill">${labelize(school.region)}</span>
           <span class="pill">${labelize(school.size)}</span>
           <span class="pill">${school.admitRate}% admit rate</span>
+          ${school.source === "directory" ? `<span class="pill live-pill">Live search result</span>` : ""}
         </div>
       </div>
     </button>
-  `).join("") || `<p class="helper-text">No colleges match that search.</p>`;
+  `).join("") || `<p class="helper-text">No colleges match that search${universityDirectoryStatus === "error" ? " because the live directory is unavailable right now" : ""}.</p>`;
 }
 
 function renderYourList() {
