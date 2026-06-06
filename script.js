@@ -439,6 +439,7 @@ schools.forEach((school) => {
 });
 
 const UNIVERSITY_DIRECTORY_URL = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
+const MAX_DIRECTORY_SCHOOLS = 1000;
 const SCORECARD_SEARCH_URL = "https://api.data.gov/ed/collegescorecard/v1/schools";
 const SCORECARD_FIELDS = [
   "school.name",
@@ -451,6 +452,7 @@ const SCORECARD_FIELDS = [
 let universityDirectory = null;
 let universityDirectoryPromise = null;
 let universityDirectoryStatus = "idle";
+let directoryPoolAdded = false;
 let scorecardSearchStatus = "idle";
 const scorecardSearchCache = new Map();
 let schoolSearchToken = 0;
@@ -784,6 +786,23 @@ function addLiveSearchMatches(matches) {
   });
 }
 
+function addDirectoryPool(limit = MAX_DIRECTORY_SCHOOLS) {
+  if (!universityDirectory?.length) return 0;
+  const existingNames = new Set(schools.map((school) => school.name.toLowerCase()));
+  let added = 0;
+
+  for (const school of universityDirectory) {
+    if (added >= limit) break;
+    if (existingNames.has(school.name.toLowerCase())) continue;
+    existingNames.add(school.name.toLowerCase());
+    schools.push(school);
+    added += 1;
+  }
+
+  directoryPoolAdded = true;
+  return added;
+}
+
 function addDirectoryMatches(query) {
   if (!query || query.length < 2 || !universityDirectory?.length) return;
   const existingNames = new Set(schools.map((school) => school.name.toLowerCase()));
@@ -792,12 +811,18 @@ function addDirectoryMatches(query) {
       if (existingNames.has(school.name.toLowerCase())) return false;
       return searchTextForSchool(school).includes(query);
     })
-    .slice(0, 80);
+    .slice(0, MAX_DIRECTORY_SCHOOLS);
 
   matches.forEach((school) => {
     existingNames.add(school.name.toLowerCase());
     schools.push(school);
   });
+}
+
+async function hydrateDirectoryPool() {
+  if (directoryPoolAdded || universityDirectoryStatus === "error") return;
+  await loadUniversityDirectory();
+  addDirectoryPool();
 }
 
 function updateSelectionCount() {
@@ -858,6 +883,12 @@ async function renderSchoolPicker() {
   const query = state.schoolSearch.trim().toLowerCase();
   const token = ++schoolSearchToken;
 
+  if (!query && !directoryPoolAdded) {
+    hydrateDirectoryPool().then(() => {
+      if (!views.school.classList.contains("hidden") && !state.schoolSearch.trim()) renderSchoolPicker();
+    });
+  }
+
   if (query.length >= 2) {
     schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching live U.S. college sources...</p>`;
     const [scorecardMatches] = await Promise.all([
@@ -866,6 +897,7 @@ async function renderSchoolPicker() {
     ]);
     if (token !== schoolSearchToken) return;
     addLiveSearchMatches(scorecardMatches);
+    addDirectoryPool();
   }
 
   addDirectoryMatches(query);
