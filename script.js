@@ -440,6 +440,8 @@ schools.forEach((school) => {
 
 const UNIVERSITY_DIRECTORY_URL = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
 const MAX_DIRECTORY_SCHOOLS = 1000;
+const DIRECTORY_FETCH_TIMEOUT_MS = 6000;
+const SCORECARD_FETCH_TIMEOUT_MS = 3500;
 const SCORECARD_SEARCH_URL = "https://api.data.gov/ed/collegescorecard/v1/schools";
 const SCORECARD_FIELDS = [
   "school.name",
@@ -453,6 +455,7 @@ let universityDirectory = null;
 let universityDirectoryPromise = null;
 let universityDirectoryStatus = "idle";
 let directoryPoolAdded = false;
+let directoryHydrationStarted = false;
 let scorecardSearchStatus = "idle";
 const scorecardSearchCache = new Map();
 let schoolSearchToken = 0;
@@ -539,6 +542,16 @@ async function loadRankingData() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function formatDate(value) {
@@ -720,7 +733,7 @@ async function loadUniversityDirectory() {
   if (universityDirectoryPromise) return universityDirectoryPromise;
 
   universityDirectoryStatus = "loading";
-  universityDirectoryPromise = fetch(UNIVERSITY_DIRECTORY_URL, { cache: "force-cache" })
+  universityDirectoryPromise = fetchWithTimeout(UNIVERSITY_DIRECTORY_URL, { cache: "force-cache" }, DIRECTORY_FETCH_TIMEOUT_MS)
     .then((response) => {
       if (!response.ok) throw new Error(`University directory returned ${response.status}`);
       return response.json();
@@ -755,7 +768,7 @@ async function searchScorecard(query) {
   });
 
   try {
-    const response = await fetch(`${SCORECARD_SEARCH_URL}?${params.toString()}`, { cache: "no-store" });
+    const response = await fetchWithTimeout(`${SCORECARD_SEARCH_URL}?${params.toString()}`, { cache: "no-store" }, SCORECARD_FETCH_TIMEOUT_MS);
     if (!response.ok) throw new Error(`College Scorecard returned ${response.status}`);
     const data = await response.json();
     const results = (data.results || [])
@@ -821,9 +834,10 @@ function addDirectoryMatches(query) {
 }
 
 async function hydrateDirectoryPool() {
-  if (directoryPoolAdded || universityDirectoryStatus === "error") return;
+  if (directoryPoolAdded || directoryHydrationStarted || universityDirectoryStatus === "error") return 0;
+  directoryHydrationStarted = true;
   await loadUniversityDirectory();
-  addDirectoryPool();
+  return addDirectoryPool();
 }
 
 function updateSelectionCount() {
@@ -884,21 +898,27 @@ async function renderSchoolPicker() {
   const query = state.schoolSearch.trim().toLowerCase();
   const token = ++schoolSearchToken;
 
-  if (!query && !directoryPoolAdded) {
-    hydrateDirectoryPool().then(() => {
-      if (!views.school.classList.contains("hidden") && !state.schoolSearch.trim()) renderSchoolPicker();
+  if (!query && !directoryPoolAdded && !directoryHydrationStarted && universityDirectoryStatus !== "error") {
+    hydrateDirectoryPool().then((added) => {
+      if (added && !views.school.classList.contains("hidden") && !state.schoolSearch.trim()) renderSchoolPicker();
     });
   }
 
   if (query.length >= 2) {
     schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching live U.S. college sources...</p>`;
-    const [scorecardMatches] = await Promise.all([
-      searchScorecard(query),
-      universityDirectoryStatus === "ready" ? Promise.resolve(universityDirectory) : loadUniversityDirectory()
-    ]);
+    const scorecardMatches = await searchScorecard(query);
     if (token !== schoolSearchToken) return;
     addLiveSearchMatches(scorecardMatches);
-    addDirectoryPool();
+
+    if (universityDirectoryStatus === "ready") {
+      addDirectoryPool();
+    } else if (!directoryHydrationStarted && universityDirectoryStatus !== "error") {
+      const queryAtStart = state.schoolSearch.trim().toLowerCase();
+      hydrateDirectoryPool().then((added) => {
+        const queryNow = state.schoolSearch.trim().toLowerCase();
+        if (added && queryNow === queryAtStart && !views.school.classList.contains("hidden")) renderSchoolPicker();
+      });
+    }
   }
 
   addDirectoryMatches(query);
