@@ -165,8 +165,8 @@ button {
   color: #ffffff;
   text-align: right;
   text-shadow:
-    0 2px 4px rgba(5, 12, 11, 0.48),
-    0 18px 42px rgba(5, 12, 11, 0.34);
+    0 3px 8px rgba(5, 12, 11, 0.7),
+    0 18px 42px rgba(5, 12, 11, 0.42);
 }
 
 .eyebrow {
@@ -186,7 +186,11 @@ button {
   line-height: 1.02;
   font-weight: 800;
   letter-spacing: 0;
-  color: #ffdc7a;
+  color: #fff8d6;
+  text-shadow:
+    0 2px 0 rgba(23, 76, 69, 0.62),
+    0 6px 18px rgba(5, 12, 11, 0.78),
+    0 18px 44px rgba(5, 12, 11, 0.5);
 }
 
 .hero-copy p:last-child {
