@@ -411,6 +411,10 @@ function closeLoginSheet() {
   loginSheetProgress = 0;
 }
 
+function isFormInteraction(target) {
+  return Boolean(target.closest("input, select, textarea, button, a, label"));
+}
+
 function renderSchoolPicker() {
   renderRankingNotice();
   updateSelectionCount();
@@ -654,6 +658,7 @@ document.querySelector(".app-shell:not(.focus-mode) .topbar")?.addEventListener(
 
 appShell.addEventListener("pointerdown", (event) => {
   if (appShell.classList.contains("focus-mode")) return;
+  if (appShell.classList.contains("login-open") && isFormInteraction(event.target)) return;
   loginDragStart = event.clientY;
   loginDragCurrent = event.clientY;
   appShell.classList.add("is-dragging");

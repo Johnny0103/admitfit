@@ -121,6 +121,38 @@ button {
   background: transparent;
 }
 
+.brand-logo {
+  position: absolute;
+  z-index: 2;
+  top: 28px;
+  right: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 8px 14px 8px 8px;
+  color: #0e2f2a;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 16px 38px rgba(7, 15, 14, 0.14);
+  font-weight: 950;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e8f7ff;
+}
+
+.brand-mark svg {
+  width: 34px;
+  height: 34px;
+  display: block;
+}
+
 .hero-copy {
   position: absolute;
   z-index: 1;
@@ -1015,7 +1047,13 @@ legend {
   .hero-copy {
     left: 20px;
     right: 20px;
-    bottom: 20px;
+    top: 92px;
+    bottom: auto;
+  }
+
+  .brand-logo {
+    top: 18px;
+    right: 18px;
   }
 
   .topbar,
