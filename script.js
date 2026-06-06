@@ -273,6 +273,171 @@ const schools = [
   }
 ];
 
+const supplementalSchools = [
+  {
+    name: "University of California, Los Angeles",
+    searchAliases: ["UCLA", "UC Los Angeles"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "business", "health", "social", "arts", "undecided"],
+    admitRate: 9,
+    avgGpa: 3.92,
+    avgSat: 1450,
+    rigor: 10,
+    netCost: 27000,
+    usNewsRank: 17,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucla.edu",
+    traits: ["Top public university", "Los Angeles access", "Research scale"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, San Diego",
+    searchAliases: ["UCSD", "UC San Diego"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "health", "social", "business", "arts", "undecided"],
+    admitRate: 25,
+    avgGpa: 3.86,
+    avgSat: 1390,
+    rigor: 9,
+    netCost: 27000,
+    usNewsRank: 29,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucsd.edu",
+    traits: ["STEM research", "Coastal campus", "Health and science strength"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Davis",
+    searchAliases: ["UCD", "UC Davis"],
+    region: "west",
+    size: "large",
+    majors: ["health", "engineering", "social", "business", "arts", "undecided"],
+    admitRate: 37,
+    avgGpa: 3.78,
+    avgSat: 1310,
+    rigor: 8,
+    netCost: 26000,
+    usNewsRank: 32,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucdavis.edu",
+    traits: ["Life sciences", "College town", "Research university"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Irvine",
+    searchAliases: ["UCI", "UC Irvine"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "health", "business", "social", "arts", "undecided"],
+    admitRate: 26,
+    avgGpa: 3.84,
+    avgSat: 1360,
+    rigor: 9,
+    netCost: 25000,
+    usNewsRank: 32,
+    usNewsCategory: "National Universities",
+    officialDomain: "uci.edu",
+    traits: ["Orange County", "Social mobility", "Research university"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Santa Barbara",
+    searchAliases: ["UCSB", "UC Santa Barbara"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "social", "arts", "health", "business", "undecided"],
+    admitRate: 28,
+    avgGpa: 3.82,
+    avgSat: 1350,
+    rigor: 8,
+    netCost: 26000,
+    usNewsRank: 40,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucsb.edu",
+    traits: ["Coastal research", "Strong sciences", "Collaborative campus"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Merced",
+    searchAliases: ["UCM", "UC Merced"],
+    region: "west",
+    size: "medium",
+    majors: ["engineering", "health", "social", "arts", "business", "undecided"],
+    admitRate: 88,
+    avgGpa: 3.45,
+    avgSat: 1120,
+    rigor: 5,
+    netCost: 24000,
+    usNewsRank: 57,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucmerced.edu",
+    traits: ["Fast-rising UC campus", "Social mobility", "Research growth"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Riverside",
+    searchAliases: ["UCR", "UC Riverside"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "business", "health", "social", "arts", "undecided"],
+    admitRate: 69,
+    avgGpa: 3.55,
+    avgSat: 1180,
+    rigor: 6,
+    netCost: 25000,
+    usNewsRank: 75,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucr.edu",
+    traits: ["Social mobility", "Diverse campus", "Research university"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  },
+  {
+    name: "University of California, Santa Cruz",
+    searchAliases: ["UCSC", "UC Santa Cruz"],
+    region: "west",
+    size: "large",
+    majors: ["engineering", "arts", "social", "health", "business", "undecided"],
+    admitRate: 65,
+    avgGpa: 3.58,
+    avgSat: 1240,
+    rigor: 6,
+    netCost: 27000,
+    usNewsRank: 88,
+    usNewsCategory: "National Universities",
+    officialDomain: "ucsc.edu",
+    traits: ["Redwood campus", "Computer science", "Creative research"],
+    requirements: ["UC application", "Transcript self-report", "Activities list", "Personal insight questions", "Major review", "Financial aid forms"]
+  }
+];
+
+const existingSchoolNames = new Set(schools.map((school) => school.name.toLowerCase()));
+supplementalSchools.forEach((school) => {
+  if (!existingSchoolNames.has(school.name.toLowerCase())) {
+    schools.push(school);
+    existingSchoolNames.add(school.name.toLowerCase());
+  }
+});
+
+const curatedAliasMap = {
+  "University of California, Berkeley": ["UC Berkeley", "UCB", "Cal"],
+  "University of Southern California": ["USC"],
+  "New York University": ["NYU"],
+  "Georgia Institute of Technology": ["Georgia Tech"],
+  "University of Texas at Austin": ["UT Austin", "UT"],
+  "Boston University": ["BU"],
+  "Northeastern University": ["NEU"],
+  "University of Washington": ["UW", "U Dub"],
+  "Santa Clara University": ["SCU"],
+  "Loyola Marymount University": ["LMU"],
+  "Ohio State University": ["OSU"]
+};
+
+schools.forEach((school) => {
+  school.searchAliases = [...new Set([...(school.searchAliases || []), ...(curatedAliasMap[school.name] || [])])];
+});
+
 const UNIVERSITY_DIRECTORY_URL = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
 const SCORECARD_SEARCH_URL = "https://api.data.gov/ed/collegescorecard/v1/schools";
 const SCORECARD_FIELDS = [
@@ -408,6 +573,18 @@ function schoolIcon(school) {
   return `<img src="${officialIconUrl(school)}" alt="${school.name} official site icon" loading="lazy">`;
 }
 
+function searchTextForSchool(school) {
+  return [
+    school.name,
+    school.region,
+    school.size,
+    school.officialDomain,
+    ...(school.searchAliases || []),
+    ...(school.majors || []),
+    ...(school.traits || [])
+  ].join(" ").toLowerCase();
+}
+
 const stateNamesByCode = {
   AL: "alabama",
   AK: "alaska",
@@ -506,6 +683,7 @@ function schoolFromScorecardEntry(entry) {
     officialDomain: normalizeSchoolDomain(entry["school.school_url"] || ""),
     popularity: enrollment ? clamp(Math.round(50 + enrollment / 900), 52, 86) : 58,
     source: "scorecard",
+    searchAliases: [],
     traits: ["Department of Education data", stateCode ? `${stateCode} campus` : "U.S. college", enrollment ? `${enrollment.toLocaleString()} undergraduates` : "Enrollment varies"],
     requirements: ["Application form", "Transcript", "Test score policy review", "Activities list", "Personal essay", "Financial aid forms"]
   };
@@ -528,6 +706,7 @@ function schoolFromDirectoryEntry(entry) {
     officialDomain: domain,
     popularity: 55,
     source: "directory",
+    searchAliases: [],
     traits: ["U.S. university", entry["state-province"] || "Official school profile", domain || "Official website"],
     requirements: ["Application form", "Transcript", "Test score policy review", "Activities list", "Personal essay", "Financial aid forms"]
   };
@@ -611,14 +790,7 @@ function addDirectoryMatches(query) {
   const matches = universityDirectory
     .filter((school) => {
       if (existingNames.has(school.name.toLowerCase())) return false;
-      const searchable = [
-        school.name,
-        school.region,
-        school.size,
-        school.officialDomain,
-        ...school.traits
-      ].join(" ").toLowerCase();
-      return searchable.includes(query);
+      return searchTextForSchool(school).includes(query);
     })
     .slice(0, 80);
 
@@ -702,15 +874,7 @@ async function renderSchoolPicker() {
     .map((school, index) => ({ school, index }))
     .filter(({ school }) => {
       if (!query) return true;
-      const searchable = [
-        school.name,
-        school.region,
-        school.size,
-        school.officialDomain,
-        ...school.majors,
-        ...school.traits
-      ].join(" ").toLowerCase();
-      return searchable.includes(query);
+      return searchTextForSchool(school).includes(query);
     })
     .sort((a, b) => {
       if (state.schoolSort === "popular") return b.school.popularity - a.school.popularity;
