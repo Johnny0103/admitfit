@@ -581,6 +581,31 @@ button:focus-visible {
   margin-top: 16px;
 }
 
+.school-result-count {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #41625d;
+  font-weight: 800;
+}
+
+.load-more-schools {
+  grid-column: 1 / -1;
+  min-height: 54px;
+  border: 1px solid #b9ded7;
+  border-radius: 999px;
+  color: #174c45;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 246, 213, 0.96)),
+    #fff;
+  box-shadow: 0 12px 26px rgba(23, 33, 31, 0.1);
+  font-weight: 950;
+}
+
+.load-more-schools:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 32px rgba(23, 33, 31, 0.13);
+}
+
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

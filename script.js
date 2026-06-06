@@ -476,7 +476,8 @@ const state = {
   selectedSchools: [],
   activeFilter: "all",
   schoolSearch: "",
-  schoolSort: "ranking"
+  schoolSort: "ranking",
+  visibleSchoolLimit: 120
 };
 
 const views = {
@@ -913,7 +914,19 @@ async function renderSchoolPicker() {
       return a.school.usNewsRank - b.school.usNewsRank || a.school.name.localeCompare(b.school.name);
     });
 
-  schoolPicker.innerHTML = visibleSchools.map(({ school, index }) => `
+  const totalMatches = visibleSchools.length;
+  const shownSchools = visibleSchools.slice(0, state.visibleSchoolLimit);
+  const remainingCount = Math.max(0, totalMatches - shownSchools.length);
+  const resultSummary = totalMatches
+    ? `<p class="school-result-count">${shownSchools.length} of ${totalMatches} schools shown${directoryPoolAdded ? " from the expanded source" : ""}.</p>`
+    : "";
+  const loadMore = remainingCount
+    ? `<button class="load-more-schools" id="load-more-schools" type="button">Show ${Math.min(120, remainingCount)} more schools</button>`
+    : "";
+
+  schoolPicker.innerHTML = `
+    ${resultSummary}
+    ${shownSchools.map(({ school, index }) => `
     <button class="school-card ${state.selectedSchools.includes(index) ? "selected" : ""}" type="button" data-school="${index}" aria-pressed="${state.selectedSchools.includes(index)}">
       <span class="school-icon" data-theme="${index % 4}">${schoolIcon(school)}</span>
       <div class="school-content">
@@ -930,7 +943,9 @@ async function renderSchoolPicker() {
         </div>
       </div>
     </button>
-  `).join("") || `<p class="helper-text">No colleges match that search${scorecardSearchStatus === "error" && universityDirectoryStatus === "error" ? " because live search is unavailable right now" : ""}.</p>`;
+    `).join("") || `<p class="helper-text">No colleges match that search${scorecardSearchStatus === "error" && universityDirectoryStatus === "error" ? " because live search is unavailable right now" : ""}.</p>`}
+    ${loadMore}
+  `;
 }
 
 function renderYourList() {
@@ -1225,6 +1240,7 @@ document.querySelectorAll(".choice-card").forEach((button) => {
     if (state.flow === "evaluate") {
       state.schoolSearch = "";
       state.schoolSort = "ranking";
+      state.visibleSchoolLimit = 120;
       schoolSearch.value = "";
       document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
         sortButton.classList.toggle("active", sortButton.dataset.sort === state.schoolSort);
@@ -1239,12 +1255,14 @@ document.querySelectorAll(".choice-card").forEach((button) => {
 
 schoolSearch.addEventListener("input", (event) => {
   state.schoolSearch = event.target.value;
+  state.visibleSchoolLimit = 120;
   renderSchoolPicker();
 });
 
 document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
   button.addEventListener("click", () => {
     state.schoolSort = button.dataset.sort;
+    state.visibleSchoolLimit = 120;
     document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
       sortButton.classList.toggle("active", sortButton === button);
     });
@@ -1253,6 +1271,12 @@ document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
 });
 
 schoolPicker.addEventListener("click", (event) => {
+  if (event.target.closest("#load-more-schools")) {
+    state.visibleSchoolLimit += 120;
+    renderSchoolPicker();
+    return;
+  }
+
   const card = event.target.closest("[data-school]");
   if (!card) return;
   const index = Number(card.dataset.school);
@@ -1321,6 +1345,7 @@ restartButton.addEventListener("click", () => {
   state.activeFilter = "all";
   state.schoolSearch = "";
   state.schoolSort = "ranking";
+  state.visibleSchoolLimit = 120;
   window.currentResults = [];
   document.querySelector("#profile-form").reset();
   schoolSearch.value = "";
