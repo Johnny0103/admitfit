@@ -274,9 +274,20 @@ const schools = [
 ];
 
 const UNIVERSITY_DIRECTORY_URL = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
+const SCORECARD_SEARCH_URL = "https://api.data.gov/ed/collegescorecard/v1/schools";
+const SCORECARD_FIELDS = [
+  "school.name",
+  "school.school_url",
+  "school.state",
+  "latest.admissions.admission_rate.overall",
+  "latest.student.size",
+  "latest.cost.avg_net_price.overall"
+].join(",");
 let universityDirectory = null;
 let universityDirectoryPromise = null;
 let universityDirectoryStatus = "idle";
+let scorecardSearchStatus = "idle";
+const scorecardSearchCache = new Map();
 let schoolSearchToken = 0;
 
 const rankingMetadata = {
@@ -378,7 +389,11 @@ function daysSince(value) {
 }
 
 function rankLabel(school) {
-  if (!school.usNewsRank || school.usNewsRank >= 900) return school.source === "directory" ? "National directory" : "Rank pending";
+  if (!school.usNewsRank || school.usNewsRank >= 900) {
+    if (school.source === "scorecard") return "College Scorecard";
+    if (school.source === "directory") return "National directory";
+    return "Rank pending";
+  }
   return `U.S. News #${school.usNewsRank}`;
 }
 
@@ -393,8 +408,62 @@ function schoolIcon(school) {
   return `<img src="${officialIconUrl(school)}" alt="${school.name} official site icon" loading="lazy">`;
 }
 
+const stateNamesByCode = {
+  AL: "alabama",
+  AK: "alaska",
+  AZ: "arizona",
+  AR: "arkansas",
+  CA: "california",
+  CO: "colorado",
+  CT: "connecticut",
+  DE: "delaware",
+  DC: "washington, d.c.",
+  FL: "florida",
+  GA: "georgia",
+  HI: "hawaii",
+  ID: "idaho",
+  IL: "illinois",
+  IN: "indiana",
+  IA: "iowa",
+  KS: "kansas",
+  KY: "kentucky",
+  LA: "louisiana",
+  ME: "maine",
+  MD: "maryland",
+  MA: "massachusetts",
+  MI: "michigan",
+  MN: "minnesota",
+  MS: "mississippi",
+  MO: "missouri",
+  MT: "montana",
+  NE: "nebraska",
+  NV: "nevada",
+  NH: "new hampshire",
+  NJ: "new jersey",
+  NM: "new mexico",
+  NY: "new york",
+  NC: "north carolina",
+  ND: "north dakota",
+  OH: "ohio",
+  OK: "oklahoma",
+  OR: "oregon",
+  PA: "pennsylvania",
+  RI: "rhode island",
+  SC: "south carolina",
+  SD: "south dakota",
+  TN: "tennessee",
+  TX: "texas",
+  UT: "utah",
+  VT: "vermont",
+  VA: "virginia",
+  WA: "washington",
+  WV: "west virginia",
+  WI: "wisconsin",
+  WY: "wyoming"
+};
+
 function inferRegionFromState(stateName = "") {
-  const stateKey = stateName.toLowerCase();
+  const stateKey = stateNamesByCode[stateName.toUpperCase()] || stateName.toLowerCase();
   const northeast = ["connecticut", "maine", "massachusetts", "new hampshire", "rhode island", "vermont", "new jersey", "new york", "pennsylvania"];
   const midwest = ["illinois", "indiana", "michigan", "ohio", "wisconsin", "iowa", "kansas", "minnesota", "missouri", "nebraska", "north dakota", "south dakota"];
   const south = ["delaware", "florida", "georgia", "maryland", "north carolina", "south carolina", "virginia", "washington, d.c.", "west virginia", "alabama", "kentucky", "mississippi", "tennessee", "arkansas", "louisiana", "oklahoma", "texas"];
@@ -404,6 +473,42 @@ function inferRegionFromState(stateName = "") {
   if (south.includes(stateKey)) return "south";
   if (west.includes(stateKey)) return "west";
   return "any";
+}
+
+function normalizeSchoolDomain(value = "") {
+  return value.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
+}
+
+function schoolSizeFromEnrollment(enrollment) {
+  if (!enrollment) return "medium";
+  if (enrollment < 3000) return "small";
+  if (enrollment > 12000) return "large";
+  return "medium";
+}
+
+function schoolFromScorecardEntry(entry) {
+  const enrollment = Number(entry["latest.student.size"]) || 0;
+  const admissionRate = Number(entry["latest.admissions.admission_rate.overall"]);
+  const netCost = Number(entry["latest.cost.avg_net_price.overall"]);
+  const stateCode = entry["school.state"] || "";
+  return {
+    name: entry["school.name"],
+    region: inferRegionFromState(stateCode),
+    size: schoolSizeFromEnrollment(enrollment),
+    majors: ["engineering", "business", "health", "social", "arts", "undecided"],
+    admitRate: admissionRate ? Math.round(admissionRate * 100) : 65,
+    avgGpa: admissionRate && admissionRate < 0.2 ? 3.82 : admissionRate && admissionRate < 0.5 ? 3.62 : 3.35,
+    avgSat: admissionRate && admissionRate < 0.2 ? 1430 : admissionRate && admissionRate < 0.5 ? 1280 : 1120,
+    rigor: admissionRate && admissionRate < 0.2 ? 9 : admissionRate && admissionRate < 0.5 ? 7 : 5,
+    netCost: netCost || 30000,
+    usNewsRank: 998,
+    usNewsCategory: "College Scorecard live data",
+    officialDomain: normalizeSchoolDomain(entry["school.school_url"] || ""),
+    popularity: enrollment ? clamp(Math.round(50 + enrollment / 900), 52, 86) : 58,
+    source: "scorecard",
+    traits: ["Department of Education data", stateCode ? `${stateCode} campus` : "U.S. college", enrollment ? `${enrollment.toLocaleString()} undergraduates` : "Enrollment varies"],
+    requirements: ["Application form", "Transcript", "Test score policy review", "Activities list", "Personal essay", "Financial aid forms"]
+  };
 }
 
 function schoolFromDirectoryEntry(entry) {
@@ -452,6 +557,52 @@ async function loadUniversityDirectory() {
       return [];
     });
   return universityDirectoryPromise;
+}
+
+async function searchScorecard(query) {
+  if (!query || query.length < 2) return [];
+  if (scorecardSearchCache.has(query)) return scorecardSearchCache.get(query);
+
+  scorecardSearchStatus = "loading";
+  const params = new URLSearchParams({
+    api_key: "DEMO_KEY",
+    "school.name": query,
+    "school.operating": "1",
+    per_page: "100",
+    _fields: SCORECARD_FIELDS
+  });
+
+  try {
+    const response = await fetch(`${SCORECARD_SEARCH_URL}?${params.toString()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`College Scorecard returned ${response.status}`);
+    const data = await response.json();
+    const results = (data.results || [])
+      .filter((entry) => entry["school.name"])
+      .map(schoolFromScorecardEntry)
+      .sort((a, b) => {
+        const aStarts = a.name.toLowerCase().startsWith(query) ? 0 : 1;
+        const bStarts = b.name.toLowerCase().startsWith(query) ? 0 : 1;
+        return aStarts - bStarts || b.popularity - a.popularity || a.name.localeCompare(b.name);
+      });
+    scorecardSearchStatus = "ready";
+    scorecardSearchCache.set(query, results);
+    return results;
+  } catch (error) {
+    scorecardSearchStatus = "error";
+    console.warn("College Scorecard search failed; falling back to the university directory.", error);
+    scorecardSearchCache.set(query, []);
+    return [];
+  }
+}
+
+function addLiveSearchMatches(matches) {
+  if (!matches.length) return;
+  const existingNames = new Set(schools.map((school) => school.name.toLowerCase()));
+  matches.forEach((school) => {
+    if (existingNames.has(school.name.toLowerCase())) return;
+    existingNames.add(school.name.toLowerCase());
+    schools.push(school);
+  });
 }
 
 function addDirectoryMatches(query) {
@@ -535,10 +686,14 @@ async function renderSchoolPicker() {
   const query = state.schoolSearch.trim().toLowerCase();
   const token = ++schoolSearchToken;
 
-  if (query.length >= 2 && universityDirectoryStatus !== "ready") {
-    schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching the national U.S. university directory...</p>`;
-    await loadUniversityDirectory();
+  if (query.length >= 2) {
+    schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching live U.S. college sources...</p>`;
+    const [scorecardMatches] = await Promise.all([
+      searchScorecard(query),
+      universityDirectoryStatus === "ready" ? Promise.resolve(universityDirectory) : loadUniversityDirectory()
+    ]);
     if (token !== schoolSearchToken) return;
+    addLiveSearchMatches(scorecardMatches);
   }
 
   addDirectoryMatches(query);
@@ -574,11 +729,12 @@ async function renderSchoolPicker() {
           <span class="pill">${labelize(school.region)}</span>
           <span class="pill">${labelize(school.size)}</span>
           <span class="pill">${school.admitRate}% admit rate</span>
-          ${school.source === "directory" ? `<span class="pill live-pill">Live search result</span>` : ""}
+          ${school.source === "scorecard" ? `<span class="pill live-pill">Live federal data</span>` : ""}
+          ${school.source === "directory" ? `<span class="pill live-pill">Live directory result</span>` : ""}
         </div>
       </div>
     </button>
-  `).join("") || `<p class="helper-text">No colleges match that search${universityDirectoryStatus === "error" ? " because the live directory is unavailable right now" : ""}.</p>`;
+  `).join("") || `<p class="helper-text">No colleges match that search${scorecardSearchStatus === "error" && universityDirectoryStatus === "error" ? " because live search is unavailable right now" : ""}.</p>`;
 }
 
 function renderYourList() {
