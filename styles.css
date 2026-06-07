@@ -49,8 +49,7 @@ button {
   place-items: end center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 14%, rgba(255, 210, 99, 0.34), transparent 26%),
-    radial-gradient(circle at 84% 76%, rgba(192, 130, 44, 0.32), transparent 30%),
+    linear-gradient(135deg, #070604 0%, #1c160b 48%, #b7832f 100%),
     #090806;
 }
 
@@ -59,10 +58,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(110deg, transparent 0 56%, rgba(255, 207, 96, 0.3) 56% 57.4%, transparent 57.4% 100%),
-    linear-gradient(145deg, transparent 0 72%, rgba(255, 246, 205, 0.16) 72% 73.5%, transparent 73.5% 100%),
-    repeating-linear-gradient(0deg, rgba(255, 210, 99, 0.08) 0 1px, transparent 1px 48px);
+  background: none;
 }
 
 .app-shell.focus-mode {
@@ -72,17 +68,13 @@ button {
   gap: 0;
   padding: 0;
   background:
-    radial-gradient(circle at 12% 10%, rgba(255, 210, 99, 0.2), transparent 28%),
-    radial-gradient(circle at 86% 12%, rgba(255, 191, 69, 0.18), transparent 26%),
-    linear-gradient(135deg, rgba(255, 210, 99, 0.18), transparent 32%),
-    linear-gradient(225deg, rgba(192, 130, 44, 0.2), transparent 34%),
-    repeating-linear-gradient(0deg, rgba(255, 210, 99, 0.08) 0 1px, transparent 1px 42px),
+    linear-gradient(135deg, #080705 0%, #161108 42%, #5f4218 78%, #c79237 100%),
     #0d0b08;
 }
 
 .app-shell.focus-mode::before,
 .app-shell.focus-mode::after {
-  content: "";
+  content: none;
   position: fixed;
   z-index: 0;
   pointer-events: none;
