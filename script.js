@@ -1121,6 +1121,11 @@ function labelize(value) {
 
 function parseProfile(form) {
   const data = new FormData(form);
+  const activities = data.getAll("activities");
+  const activityDescriptions = Object.fromEntries(activities.map((activity) => [
+    activity,
+    String(data.get(`activity_${activity}`) || "").trim()
+  ]));
   return {
     gpa: Number(data.get("gpa")),
     sat: Number(data.get("sat")),
@@ -1129,11 +1134,13 @@ function parseProfile(form) {
     major: data.get("major"),
     region: data.get("region"),
     size: data.get("size"),
-    budget: Number(data.get("budget")),
-    activities: Number(data.get("activities")),
+    schoolType: data.get("schoolType"),
+    setting: data.get("setting"),
+    activities,
+    activityDescriptions,
     essays: Number(data.get("essays")),
     recommendations: Number(data.get("recommendations")),
-    aid: data.get("aid"),
+    shiningPoint: String(data.get("shiningPoint") || "").trim(),
     materials: data.getAll("materials")
   };
 }
@@ -1151,22 +1158,51 @@ function academicStrength(profile, school) {
   return clamp(gpaScore * 0.62 + rigorScore * 0.38, 5, 100);
 }
 
+function schoolType(school) {
+  const name = school.name.toLowerCase();
+  const publicSignals = ["university of ", "state university", "institute of technology", "uc ", "california,"];
+  if (school.requirements.some((item) => item.includes("UC application") || item.includes("ApplyTexas") || item.includes("UA application"))) return "public";
+  if (publicSignals.some((signal) => name.includes(signal))) return "public";
+  return "private";
+}
+
+function schoolSetting(school) {
+  const text = [...school.traits, school.name, schoolLocationLabel(school)].join(" ").toLowerCase();
+  if (text.includes("coastal") || text.includes("beach") || text.includes("santa barbara") || text.includes("la jolla") || text.includes("santa cruz")) return "beach";
+  if (text.includes("urban") || text.includes("city") || text.includes("los angeles") || text.includes("new york") || text.includes("boston") || text.includes("atlanta") || text.includes("seattle") || text.includes("austin")) return "city";
+  if (text.includes("college town") || text.includes("ann arbor") || text.includes("davis") || text.includes("amherst") || text.includes("west lafayette")) return "college-town";
+  if (text.includes("outdoor") || text.includes("nature") || text.includes("redwood") || text.includes("oregon")) return "nature";
+  return school.size === "large" ? "city" : "suburban";
+}
+
+function activityCharacterStrength(profile) {
+  const selected = profile.activities.length;
+  const described = profile.activities.filter((activity) => (profile.activityDescriptions[activity] || "").length >= 18).length;
+  const leadershipBonus = profile.activities.includes("leadership") || profile.activities.includes("entrepreneurship") ? 12 : 0;
+  const careBonus = profile.activities.includes("service") || profile.activities.includes("work") ? 8 : 0;
+  const depthScore = selected ? Math.min(40, selected * 7) + described * 7 : 12;
+  const shiningBonus = profile.shiningPoint.length >= 35 ? 12 : profile.shiningPoint.length ? 6 : 0;
+  return clamp(24 + depthScore + leadershipBonus + careBonus + shiningBonus, 12, 100);
+}
+
 function fitScore(profile, school) {
   const majorFit = school.majors.includes(profile.major) ? 100 : profile.major === "undecided" ? 88 : 58;
   const regionFit = profile.region === "any" || profile.region === school.region ? 100 : 62;
   const sizeFit = profile.size === "any" || profile.size === school.size ? 100 : 68;
-  const budgetFit = profile.budget >= school.netCost ? 100 : clamp(100 - ((school.netCost - profile.budget) / 18000) * 42, 35, 96);
-  const activityFit = clamp(profile.activities * 10, 20, 100);
-  const aidFit = profile.aid === "high" && school.netCost <= 30000 ? 100 : profile.aid === "high" ? 70 : 86;
-  return Math.round(majorFit * 0.24 + regionFit * 0.18 + sizeFit * 0.13 + budgetFit * 0.18 + activityFit * 0.17 + aidFit * 0.1);
+  const typeFit = profile.schoolType === "any" || profile.schoolType === schoolType(school) ? 100 : 62;
+  const settingFit = profile.setting === "any" || profile.setting === schoolSetting(school) ? 100 : 64;
+  const characterFit = activityCharacterStrength(profile);
+  return Math.round(majorFit * 0.22 + regionFit * 0.15 + sizeFit * 0.1 + typeFit * 0.14 + settingFit * 0.15 + characterFit * 0.24);
 }
 
 function admissionChance(profile, school) {
   const academic = academicStrength(profile, school);
   const tests = testStrength(profile, school);
-  const application = (profile.activities * 10) * 0.36 + (profile.essays * 10) * 0.34 + (profile.recommendations * 10) * 0.3;
+  const character = activityCharacterStrength(profile);
+  const application = character * 0.42 + (profile.essays * 10) * 0.32 + (profile.recommendations * 10) * 0.26;
   const readiness = profile.materials.length / Object.keys(materialMap).length;
-  const applicantStrength = academic * 0.48 + tests * 0.24 + application * 0.21 + readiness * 100 * 0.07;
+  const fit = fitScore(profile, school);
+  const applicantStrength = academic * 0.4 + tests * 0.18 + application * 0.25 + fit * 0.1 + readiness * 100 * 0.07;
   const selectivityDrag = (100 - school.admitRate) * 0.42;
   const chance = school.admitRate + (applicantStrength - 62) * 0.58 - selectivityDrag * 0.18;
   return Math.round(clamp(chance, 2, 92));
@@ -1196,9 +1232,13 @@ function buildStrengths(profile, school, match, chance) {
   if (school.majors.includes(profile.major)) items.push("Major interest aligns with available academic strengths.");
   if (profile.region === "any" || profile.region === school.region) items.push("Region preference matches this campus.");
   if (profile.size === "any" || profile.size === school.size) items.push("Campus size preference is aligned.");
+  if (profile.schoolType === "any" || profile.schoolType === schoolType(school)) items.push(`${labelize(profile.schoolType === "any" ? schoolType(school) : profile.schoolType)} school preference fits this college.`);
+  if (profile.setting === "any" || profile.setting === schoolSetting(school)) items.push("Geographical setting preference matches the campus environment.");
+  if (profile.activities.length >= 3) items.push("Extracurricular profile shows range across multiple commitments.");
+  if (profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) items.push("Activity descriptions add character and real evidence beyond scores.");
+  if (profile.shiningPoint) items.push("Your shining point gives the application a personal theme to build around.");
   if (profile.gpa >= school.avgGpa) items.push("GPA is at or above this school's typical profile.");
   if (profile.sat >= school.avgSat) items.push("SAT score is at or above the school benchmark used here.");
-  if (profile.activities >= 6) items.push("Activities show leadership or sustained involvement.");
   if (!items.length) items.push("This school remains possible, but the profile has several fit gaps to strengthen.");
   if (match >= 82 && chance < 25) items.push("Strong fit, but admissions selectivity makes this a reach.");
   return items.slice(0, 4);

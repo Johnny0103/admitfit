@@ -216,18 +216,24 @@
                 </select>
               </label>
               <label>
-                Budget after aid per year
-                <input name="budget" type="number" min="0" max="90000" step="1000" required placeholder="35000">
+                Preferred school type
+                <select name="schoolType" required>
+                  <option value="">Choose type</option>
+                  <option value="public">Public school</option>
+                  <option value="private">Private school</option>
+                  <option value="any">No preference</option>
+                </select>
               </label>
               <label>
-                Extracurricular strength
-                <select name="activities" required>
-                  <option value="">Choose strength</option>
-                  <option value="2">Developing</option>
-                  <option value="4">Consistent participation</option>
-                  <option value="6">Leadership or awards</option>
-                  <option value="8">Major leadership, impact, or state level awards</option>
-                  <option value="10">Exceptional national or original impact</option>
+                Geographical setting
+                <select name="setting" required>
+                  <option value="">Choose setting</option>
+                  <option value="city">City / urban energy</option>
+                  <option value="beach">Beach / coastal campus</option>
+                  <option value="college-town">College town</option>
+                  <option value="suburban">Suburban / quieter area</option>
+                  <option value="nature">Nature / outdoors nearby</option>
+                  <option value="any">No preference</option>
                 </select>
               </label>
               <label>
@@ -250,16 +256,57 @@
                   <option value="10">Confirmed and highly personal</option>
                 </select>
               </label>
-              <label>
-                Need-based aid importance
-                <select name="aid" required>
-                  <option value="">Choose importance</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
+              <label class="wide-field">
+                What is your shining point? <span>Optional. Everyone has one!</span>
+                <textarea name="shiningPoint" rows="4" placeholder="A personal strength, story, project, responsibility, challenge, or community impact that makes you memorable."></textarea>
               </label>
               </div>
+              <fieldset class="activity-fieldset">
+                <legend>Extracurricular activities</legend>
+                <p class="field-help">Select all that apply, then briefly describe what you actually did for each selected activity.</p>
+                <div class="activity-grid">
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="leadership">
+                    <span>Leadership</span>
+                    <textarea name="activity_leadership" rows="3" placeholder="Role, team size, decisions, impact"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="service">
+                    <span>Community service</span>
+                    <textarea name="activity_service" rows="3" placeholder="Who you helped, hours, outcome"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="research">
+                    <span>Research / academic project</span>
+                    <textarea name="activity_research" rows="3" placeholder="Question, mentor, methods, findings"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="work">
+                    <span>Job / family responsibility</span>
+                    <textarea name="activity_work" rows="3" placeholder="Responsibilities, schedule, growth"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="arts">
+                    <span>Arts / writing / performance</span>
+                    <textarea name="activity_arts" rows="3" placeholder="Portfolio, shows, publications, practice"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="sports">
+                    <span>Athletics</span>
+                    <textarea name="activity_sports" rows="3" placeholder="Team, level, leadership, awards"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="entrepreneurship">
+                    <span>Entrepreneurship / initiative</span>
+                    <textarea name="activity_entrepreneurship" rows="3" placeholder="What you built, users, revenue, impact"></textarea>
+                  </label>
+                  <label class="activity-card">
+                    <input type="checkbox" name="activities" value="clubs">
+                    <span>Clubs / competitions</span>
+                    <textarea name="activity_clubs" rows="3" placeholder="Events, awards, contribution, consistency"></textarea>
+                  </label>
+                </div>
+              </fieldset>
               <fieldset>
                 <legend>Application materials completed</legend>
                 <label class="check-row"><input type="checkbox" name="materials" value="transcript"> Transcript request</label>
@@ -286,12 +333,12 @@
                 </svg>
               </div>
               <h3>Profile builder</h3>
-              <p>Use your strongest honest numbers. The calculator rewards readiness, fit, and application quality instead of only test scores.</p>
+              <p>Use your strongest honest numbers and your real story. The calculator rewards character, environment fit, activities, and application quality instead of only test scores.</p>
               <div class="guide-chip-row">
                 <span>Academics</span>
-                <span>Fit</span>
-                <span>Budget</span>
-                <span>Materials</span>
+                <span>Character</span>
+                <span>Location</span>
+                <span>Activities</span>
               </div>
             </aside>
           </div>
@@ -303,7 +350,7 @@
             <article>
               <span class="dot dot-fit"></span>
               <strong>Match score</strong>
-              <p>How well your preferences and strengths line up with the campus.</p>
+              <p>How well your preferences, setting, activities, and personal strengths line up with the campus.</p>
             </article>
             <article>
               <span class="dot dot-admit"></span>

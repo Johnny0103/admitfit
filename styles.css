@@ -429,7 +429,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   min-height: 46px;
   width: 100%;
   border: 1px solid #cbd6d0;
@@ -441,9 +442,64 @@ select {
 
 input:focus,
 select:focus,
+textarea:focus,
 button:focus-visible {
   outline: 3px solid rgba(38, 112, 100, 0.25);
   outline-offset: 2px;
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.wide-field {
+  grid-column: 1 / -1;
+}
+
+.wide-field span,
+.field-help {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+
+.activity-fieldset {
+  display: grid;
+  gap: 14px;
+}
+
+.field-help {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.activity-card {
+  border: 1px solid #d9e1dc;
+  border-radius: 8px;
+  padding: 13px;
+  background: rgba(255, 255, 255, 0.78);
+  align-content: start;
+}
+
+.activity-card input {
+  width: auto;
+  min-height: auto;
+}
+
+.activity-card span {
+  color: #174c45;
+  font-weight: 900;
+}
+
+.activity-card textarea {
+  margin-top: 4px;
 }
 
 .primary-button,
@@ -1611,6 +1667,7 @@ legend {
   .profile-stage,
   .results-highlights,
   .form-grid,
+  .activity-grid,
   .score-row,
   .details-grid {
     grid-template-columns: 1fr;
