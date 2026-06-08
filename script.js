@@ -412,6 +412,110 @@ const supplementalSchools = [
   }
 ];
 
+const verifiedRankingEntries = [
+  { rank: 1, name: "Princeton University", domain: "princeton.edu", state: "NJ", size: "medium" },
+  { rank: 2, name: "Massachusetts Institute of Technology", aliases: ["MIT"], domain: "mit.edu", state: "MA", size: "medium" },
+  { rank: 3, name: "Harvard University", domain: "harvard.edu", state: "MA", size: "medium" },
+  { rank: 4, name: "Stanford University", domain: "stanford.edu", state: "CA", size: "medium" },
+  { rank: 4, name: "Yale University", domain: "yale.edu", state: "CT", size: "medium" },
+  { rank: 6, name: "University of Chicago", domain: "uchicago.edu", state: "IL", size: "medium" },
+  { rank: 7, name: "Duke University", domain: "duke.edu", state: "NC", size: "medium" },
+  { rank: 7, name: "Johns Hopkins University", domain: "jhu.edu", state: "MD", size: "medium" },
+  { rank: 7, name: "Northwestern University", domain: "northwestern.edu", state: "IL", size: "medium" },
+  { rank: 7, name: "University of Pennsylvania", aliases: ["Penn", "UPenn"], domain: "upenn.edu", state: "PA", size: "medium" },
+  { rank: 11, name: "California Institute of Technology", aliases: ["Caltech"], domain: "caltech.edu", state: "CA", size: "small" },
+  { rank: 12, name: "Cornell University", domain: "cornell.edu", state: "NY", size: "large" },
+  { rank: 13, name: "Brown University", domain: "brown.edu", state: "RI", size: "medium" },
+  { rank: 13, name: "Dartmouth College", domain: "dartmouth.edu", state: "NH", size: "medium" },
+  { rank: 15, name: "Columbia University", domain: "columbia.edu", state: "NY", size: "medium" },
+  { rank: 15, name: "University of California, Berkeley", aliases: ["UC Berkeley", "UCB", "Cal"], domain: "berkeley.edu", state: "CA", size: "large" },
+  { rank: 17, name: "Rice University", domain: "rice.edu", state: "TX", size: "medium" },
+  { rank: 17, name: "University of California, Los Angeles", aliases: ["UCLA", "UC Los Angeles"], domain: "ucla.edu", state: "CA", size: "large" },
+  { rank: 17, name: "Vanderbilt University", domain: "vanderbilt.edu", state: "TN", size: "medium" },
+  { rank: 20, name: "Carnegie Mellon University", aliases: ["CMU"], domain: "cmu.edu", state: "PA", size: "medium" },
+  { rank: 20, name: "University of Michigan–Ann Arbor", matchName: "University of Michigan", aliases: ["University of Michigan", "UMich", "Michigan"], domain: "umich.edu", state: "MI", size: "large" },
+  { rank: 20, name: "University of Notre Dame", domain: "nd.edu", state: "IN", size: "medium" },
+  { rank: 20, name: "Washington University in St. Louis", aliases: ["WashU"], domain: "wustl.edu", state: "MO", size: "medium" },
+  { rank: 24, name: "Emory University", domain: "emory.edu", state: "GA", size: "medium" },
+  { rank: 24, name: "Georgetown University", domain: "georgetown.edu", state: "DC", size: "medium" },
+  { rank: 26, name: "University of North Carolina at Chapel Hill", aliases: ["UNC Chapel Hill", "UNC"], domain: "unc.edu", state: "NC", size: "large" },
+  { rank: 26, name: "University of Virginia", aliases: ["UVA"], domain: "virginia.edu", state: "VA", size: "large" },
+  { rank: 28, name: "University of Southern California", aliases: ["USC"], domain: "usc.edu", state: "CA", size: "large" },
+  { rank: 29, name: "University of California, San Diego", aliases: ["UCSD", "UC San Diego"], domain: "ucsd.edu", state: "CA", size: "large" },
+  { rank: 30, name: "University of Florida", domain: "ufl.edu", state: "FL", size: "large" },
+  { rank: 30, name: "University of Texas at Austin", aliases: ["UT Austin", "UT"], domain: "utexas.edu", state: "TX", size: "large" },
+  { rank: 32, name: "Georgia Institute of Technology", aliases: ["Georgia Tech"], domain: "gatech.edu", state: "GA", size: "large" },
+  { rank: 32, name: "New York University", aliases: ["NYU"], domain: "nyu.edu", state: "NY", size: "large" },
+  { rank: 32, name: "University of California, Davis", aliases: ["UCD", "UC Davis"], domain: "ucdavis.edu", state: "CA", size: "large" },
+  { rank: 32, name: "University of California, Irvine", aliases: ["UCI", "UC Irvine"], domain: "uci.edu", state: "CA", size: "large" },
+  { rank: 36, name: "Boston College", aliases: ["BC"], domain: "bc.edu", state: "MA", size: "medium" },
+  { rank: 36, name: "Tufts University", domain: "tufts.edu", state: "MA", size: "medium" },
+  { rank: 36, name: "University of Illinois Urbana-Champaign", aliases: ["UIUC"], domain: "illinois.edu", state: "IL", size: "large" },
+  { rank: 36, name: "University of Wisconsin–Madison", aliases: ["UW Madison", "Wisconsin"], domain: "wisc.edu", state: "WI", size: "large" },
+  { rank: 40, name: "University of California, Santa Barbara", aliases: ["UCSB", "UC Santa Barbara"], domain: "ucsb.edu", state: "CA", size: "large" },
+  { rank: 41, name: "The Ohio State University", matchName: "Ohio State University", aliases: ["Ohio State", "OSU"], domain: "osu.edu", state: "OH", size: "large" },
+  { rank: 42, name: "Boston University", aliases: ["BU"], domain: "bu.edu", state: "MA", size: "large" },
+  { rank: 42, name: "Rutgers University–New Brunswick", aliases: ["Rutgers"], domain: "rutgers.edu", state: "NJ", size: "large" },
+  { rank: 42, name: "University of Maryland, College Park", aliases: ["UMD"], domain: "umd.edu", state: "MD", size: "large" },
+  { rank: 42, name: "University of Washington", aliases: ["UW"], domain: "washington.edu", state: "WA", size: "large" },
+  { rank: 46, name: "Lehigh University", domain: "lehigh.edu", state: "PA", size: "medium" },
+  { rank: 46, name: "Northeastern University", aliases: ["NEU"], domain: "northeastern.edu", state: "MA", size: "large" },
+  { rank: 46, name: "Purdue University–Main Campus", matchName: "Purdue University", aliases: ["Purdue", "Purdue University"], domain: "purdue.edu", state: "IN", size: "large" },
+  { rank: 46, name: "University of Georgia", aliases: ["UGA"], domain: "uga.edu", state: "GA", size: "large" },
+  { rank: 46, name: "University of Rochester", domain: "rochester.edu", state: "NY", size: "medium" },
+  { rank: 51, name: "Case Western Reserve University", aliases: ["Case Western", "CWRU"], domain: "case.edu", state: "OH", size: "medium" },
+  { rank: 51, name: "Florida State University", aliases: ["FSU"], domain: "fsu.edu", state: "FL", size: "large" },
+  { rank: 51, name: "Texas A&M University", aliases: ["TAMU"], domain: "tamu.edu", state: "TX", size: "large" },
+  { rank: 51, name: "Virginia Tech", domain: "vt.edu", state: "VA", size: "large" },
+  { rank: 51, name: "Wake Forest University", domain: "wfu.edu", state: "NC", size: "medium" },
+  { rank: 51, name: "William & Mary", domain: "wm.edu", state: "VA", size: "medium" },
+  { rank: 57, name: "University of California, Merced", aliases: ["UCM", "UC Merced"], domain: "ucmerced.edu", state: "CA", size: "medium" },
+  { rank: 57, name: "Villanova University", domain: "villanova.edu", state: "PA", size: "medium" },
+  { rank: 59, name: "George Washington University", aliases: ["GWU"], domain: "gwu.edu", state: "DC", size: "medium" },
+  { rank: 59, name: "The Pennsylvania State University–University Park", aliases: ["Penn State", "Penn State University Park"], domain: "psu.edu", state: "PA", size: "large" },
+  { rank: 59, name: "Santa Clara University", aliases: ["SCU"], domain: "scu.edu", state: "CA", size: "medium" },
+  { rank: 59, name: "Stony Brook University–SUNY", aliases: ["Stony Brook University"], domain: "stonybrook.edu", state: "NY", size: "large" },
+  { rank: 59, name: "University of Minnesota–Twin Cities", aliases: ["University of Minnesota"], domain: "umn.edu", state: "MN", size: "large" },
+  { rank: 64, name: "Michigan State University", domain: "msu.edu", state: "MI", size: "large" },
+  { rank: 64, name: "North Carolina State University", aliases: ["NC State"], domain: "ncsu.edu", state: "NC", size: "large" },
+  { rank: 64, name: "Rensselaer Polytechnic Institute", aliases: ["RPI"], domain: "rpi.edu", state: "NY", size: "medium" },
+  { rank: 64, name: "University of Massachusetts Amherst", aliases: ["UMass Amherst"], domain: "umass.edu", state: "MA", size: "large" },
+  { rank: 64, name: "University of Miami", domain: "miami.edu", state: "FL", size: "medium" },
+  { rank: 69, name: "Brandeis University", domain: "brandeis.edu", state: "MA", size: "medium" },
+  { rank: 69, name: "Tulane University of Louisiana", aliases: ["Tulane University"], domain: "tulane.edu", state: "LA", size: "medium" },
+  { rank: 69, name: "University of Connecticut", aliases: ["UConn"], domain: "uconn.edu", state: "CT", size: "large" },
+  { rank: 69, name: "University of Pittsburgh", aliases: ["Pitt"], domain: "pitt.edu", state: "PA", size: "large" },
+  { rank: 73, name: "Binghamton University–SUNY", aliases: ["Binghamton University"], domain: "binghamton.edu", state: "NY", size: "medium" },
+  { rank: 73, name: "Indiana University–Bloomington", aliases: ["Indiana University"], domain: "iu.edu", state: "IN", size: "large" },
+  { rank: 75, name: "Clemson University", domain: "clemson.edu", state: "SC", size: "large" },
+  { rank: 75, name: "Rutgers University–Newark", domain: "newark.rutgers.edu", state: "NJ", size: "medium" },
+  { rank: 75, name: "Syracuse University", domain: "syracuse.edu", state: "NY", size: "large" },
+  { rank: 75, name: "University at Buffalo–SUNY", aliases: ["University at Buffalo", "SUNY Buffalo"], domain: "buffalo.edu", state: "NY", size: "large" },
+  { rank: 75, name: "University of California, Riverside", aliases: ["UCR", "UC Riverside"], domain: "ucr.edu", state: "CA", size: "large" },
+  { rank: 80, name: "Colorado School of Mines", domain: "mines.edu", state: "CO", size: "medium" },
+  { rank: 80, name: "Drexel University", domain: "drexel.edu", state: "PA", size: "large" },
+  { rank: 80, name: "New Jersey Institute of Technology", aliases: ["NJIT"], domain: "njit.edu", state: "NJ", size: "medium" },
+  { rank: 80, name: "Stevens Institute of Technology", domain: "stevens.edu", state: "NJ", size: "medium" },
+  { rank: 84, name: "Pepperdine University", domain: "pepperdine.edu", state: "CA", size: "medium" },
+  { rank: 84, name: "University of Illinois Chicago", aliases: ["UIC"], domain: "uic.edu", state: "IL", size: "large" },
+  { rank: 84, name: "Worcester Polytechnic Institute", aliases: ["WPI"], domain: "wpi.edu", state: "MA", size: "medium" },
+  { rank: 84, name: "Yeshiva University", domain: "yu.edu", state: "NY", size: "medium" },
+  { rank: 88, name: "American University", domain: "american.edu", state: "DC", size: "medium" },
+  { rank: 88, name: "Baylor University", domain: "baylor.edu", state: "TX", size: "large" },
+  { rank: 88, name: "Howard University", domain: "howard.edu", state: "DC", size: "medium" },
+  { rank: 88, name: "Marquette University", domain: "marquette.edu", state: "WI", size: "medium" },
+  { rank: 88, name: "Rochester Institute of Technology", aliases: ["RIT"], domain: "rit.edu", state: "NY", size: "large" },
+  { rank: 88, name: "Southern Methodist University", aliases: ["SMU"], domain: "smu.edu", state: "TX", size: "medium" },
+  { rank: 88, name: "University of California, Santa Cruz", aliases: ["UCSC", "UC Santa Cruz"], domain: "ucsc.edu", state: "CA", size: "large" },
+  { rank: 88, name: "University of Delaware", domain: "udel.edu", state: "DE", size: "large" },
+  { rank: 88, name: "University of South Florida", aliases: ["USF"], domain: "usf.edu", state: "FL", size: "large" },
+  { rank: 97, name: "Florida International University", aliases: ["FIU"], domain: "fiu.edu", state: "FL", size: "large" },
+  { rank: 97, name: "Fordham University", domain: "fordham.edu", state: "NY", size: "medium" },
+  { rank: 97, name: "Rutgers University–Camden", domain: "camden.rutgers.edu", state: "NJ", size: "medium" },
+  { rank: 97, name: "Texas Christian University", aliases: ["TCU"], domain: "tcu.edu", state: "TX", size: "medium" },
+  { rank: 97, name: "University of Colorado Boulder", aliases: ["CU Boulder"], domain: "colorado.edu", state: "CO", size: "large" }
+];
+
 const existingSchoolNames = new Set(schools.map((school) => school.name.toLowerCase()));
 supplementalSchools.forEach((school) => {
   if (!existingSchoolNames.has(school.name.toLowerCase())) {
@@ -464,8 +568,22 @@ let schoolSearchToken = 0;
 const rankingMetadata = {
   source: "U.S. News & World Report 2026 Best Colleges",
   sourceUrl: "https://www.usnews.com/best-colleges/rankings/national-universities",
-  verifiedDate: "2026-06-05",
-  releaseDate: "2025-09-22"
+  verifiedDate: "2026-06-08",
+  releaseDate: "2025-09-23",
+  sources: [
+    {
+      label: "U.S. News official 2026 release",
+      url: "https://www.prnewswire.com/news-releases/us-news-announces-2026-best-colleges-rankings-302563669.html"
+    },
+    {
+      label: "Ivy Coach Top 50 cross-check",
+      url: "https://www.ivycoach.com/the-ivy-coach-blog/college-admissions/2026-college-rankings/"
+    },
+    {
+      label: "Think Academy Top 100 ranking-shifts PDF",
+      url: "https://www.thethinkacademy.com/blog/wp-content/uploads/2025/10/Think-Academy-Top-100-College-Ranking-Shifts-2026-vs.-2025.pdf"
+    }
+  ]
 };
 
 const popularityScores = [94, 92, 91, 96, 89, 86, 93, 88, 84, 87, 82, 78, 75, 76, 80, 74, 72];
@@ -481,7 +599,8 @@ const state = {
   activeFilter: "all",
   schoolSearch: "",
   schoolSort: "ranking",
-  visibleSchoolLimit: 120
+  visibleSchoolLimit: 120,
+  rankingExpanded: false
 };
 
 const views = {
@@ -529,6 +648,7 @@ async function loadRankingData() {
     rankingMetadata.sourceUrl = data.sourceUrl || rankingMetadata.sourceUrl;
     rankingMetadata.verifiedDate = data.verifiedDate || rankingMetadata.verifiedDate;
     rankingMetadata.releaseDate = data.releaseDate || rankingMetadata.releaseDate;
+    rankingMetadata.sources = data.sources || rankingMetadata.sources;
 
     for (const school of schools) {
       const ranking = data.schools?.[school.name];
@@ -732,6 +852,72 @@ function schoolFromDirectoryEntry(entry) {
   };
 }
 
+function estimatedAdmitRateForRank(rank) {
+  if (rank <= 5) return 4;
+  if (rank <= 15) return 7;
+  if (rank <= 30) return 14;
+  if (rank <= 50) return 28;
+  if (rank <= 75) return 45;
+  return 58;
+}
+
+function schoolFromRankingEntry(entry) {
+  const admitRate = entry.admitRate || estimatedAdmitRateForRank(entry.rank);
+  return {
+    name: entry.name,
+    region: inferRegionFromState(entry.state || ""),
+    size: entry.size || "medium",
+    majors: ["engineering", "business", "health", "social", "arts", "undecided"],
+    admitRate,
+    avgGpa: admitRate < 10 ? 3.92 : admitRate < 25 ? 3.78 : admitRate < 50 ? 3.58 : 3.42,
+    avgSat: admitRate < 10 ? 1510 : admitRate < 25 ? 1420 : admitRate < 50 ? 1300 : 1210,
+    rigor: admitRate < 10 ? 11 : admitRate < 25 ? 9 : admitRate < 50 ? 7 : 6,
+    netCost: 30000,
+    usNewsRank: entry.rank,
+    usNewsCategory: "National Universities",
+    officialDomain: entry.domain || "",
+    popularity: clamp(96 - Math.floor(entry.rank / 2), 55, 96),
+    source: "ranking",
+    searchAliases: entry.aliases || [],
+    traits: ["2026 U.S. News National Universities", "Verified ranking view", `${entry.state || "U.S."} campus`],
+    requirements: ["Application form", "Transcript", "Test score policy review", "Activities list", "Personal essay", "Supplemental essays", "Financial aid forms"]
+  };
+}
+
+function rankedSchoolItems(query = "") {
+  const existingNames = new Map(schools.map((school, index) => [school.name.toLowerCase(), index]));
+  const items = verifiedRankingEntries.map((entry) => {
+    const lookupName = (entry.matchName || entry.name).toLowerCase();
+    let index = existingNames.get(lookupName);
+
+    if (index === undefined) {
+      index = schools.length;
+      schools.push(schoolFromRankingEntry(entry));
+      existingNames.set(lookupName, index);
+      existingNames.set(entry.name.toLowerCase(), index);
+    } else {
+      const school = schools[index];
+      school.usNewsRank = entry.rank;
+      school.usNewsCategory = "National Universities";
+      school.officialDomain = school.officialDomain || entry.domain || "";
+      school.region = school.region === "any" ? inferRegionFromState(entry.state || "") : school.region;
+      school.size = school.size || entry.size || "medium";
+      school.popularity = Math.max(school.popularity || 0, clamp(96 - Math.floor(entry.rank / 2), 55, 96));
+      school.searchAliases = [...new Set([...(school.searchAliases || []), ...(entry.aliases || []), entry.name])];
+    }
+
+    return { school: schools[index], index, rank: entry.rank, entry };
+  });
+
+  const normalizedQuery = query.trim().toLowerCase();
+  return items
+    .filter(({ school, entry }) => {
+      if (!normalizedQuery) return true;
+      return `${searchTextForSchool(school)} ${entry.name} ${(entry.aliases || []).join(" ")}`.toLowerCase().includes(normalizedQuery);
+    })
+    .sort((a, b) => a.rank - b.rank || a.school.name.localeCompare(b.school.name));
+}
+
 async function loadUniversityDirectory() {
   if (universityDirectory) return universityDirectory;
   if (universityDirectoryPromise) return universityDirectoryPromise;
@@ -857,6 +1043,7 @@ function renderRankingNotice() {
   rankingNotice.innerHTML = `
     <strong><a href="${rankingMetadata.sourceUrl}" target="_blank" rel="noreferrer">${rankingMetadata.source}</a></strong>
     <span>${status} Data release: ${formatDate(rankingMetadata.releaseDate)}. App check: ${formatDate(rankingMetadata.verifiedDate)}.</span>
+    <span class="ranking-sources">Sources used: ${rankingMetadata.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer">${source.label}</a>`).join(" · ")}</span>
   `;
 }
 
@@ -899,6 +1086,7 @@ function isFormInteraction(target) {
 function resetSchoolBrowse() {
   state.schoolSearch = "";
   state.visibleSchoolLimit = 120;
+  state.rankingExpanded = false;
   schoolSearch.value = "";
   schoolPicker.innerHTML = "";
   rankingNotice.innerHTML = "";
@@ -1128,14 +1316,15 @@ async function renderSchoolPicker() {
   updateSelectionCount();
   const query = state.schoolSearch.trim().toLowerCase();
   const token = ++schoolSearchToken;
+  const usingVerifiedRanking = state.schoolSort === "ranking";
 
-  if (!query && !directoryPoolAdded && !directoryHydrationStarted && universityDirectoryStatus !== "error") {
+  if (!usingVerifiedRanking && !query && !directoryPoolAdded && !directoryHydrationStarted && universityDirectoryStatus !== "error") {
     hydrateDirectoryPool().then((added) => {
       if (added && !views.school.classList.contains("hidden") && !state.schoolSearch.trim()) renderSchoolPicker();
     });
   }
 
-  if (query.length >= 2) {
+  if (!usingVerifiedRanking && query.length >= 2) {
     schoolPicker.innerHTML = `<p class="helper-text search-loading">Searching live U.S. college sources...</p>`;
     const scorecardMatches = await searchScorecard(query);
     if (token !== schoolSearchToken) return;
@@ -1152,26 +1341,30 @@ async function renderSchoolPicker() {
     }
   }
 
-  addDirectoryMatches(query);
+  if (!usingVerifiedRanking) addDirectoryMatches(query);
 
-  const visibleSchools = schools
-    .map((school, index) => ({ school, index }))
-    .filter(({ school }) => {
-      if (!query) return true;
-      return searchTextForSchool(school).includes(query);
-    })
-    .sort((a, b) => {
-      if (state.schoolSort === "popular") return b.school.popularity - a.school.popularity;
-      return a.school.usNewsRank - b.school.usNewsRank || a.school.name.localeCompare(b.school.name);
-    });
+  const visibleSchools = usingVerifiedRanking
+    ? rankedSchoolItems(query)
+    : schools
+      .map((school, index) => ({ school, index }))
+      .filter(({ school }) => {
+        if (!query) return true;
+        return searchTextForSchool(school).includes(query);
+      })
+      .sort((a, b) => b.school.popularity - a.school.popularity || a.school.name.localeCompare(b.school.name));
 
   const totalMatches = visibleSchools.length;
-  const shownSchools = visibleSchools.slice(0, state.visibleSchoolLimit);
+  const rankingLimit = usingVerifiedRanking && !query ? (state.rankingExpanded ? verifiedRankingEntries.length : 50) : state.visibleSchoolLimit;
+  const shownSchools = visibleSchools.slice(0, rankingLimit);
   const remainingCount = Math.max(0, totalMatches - shownSchools.length);
-  const resultSummary = totalMatches
+  const resultSummary = totalMatches && usingVerifiedRanking && !query
+    ? `<p class="school-result-count">Verified ranking view: ${state.rankingExpanded ? `Top 100 + ties (${verifiedRankingEntries.length})` : "Top 50"} National Universities shown.</p>`
+    : totalMatches
     ? `<p class="school-result-count">${shownSchools.length} of ${totalMatches} schools shown${directoryPoolAdded ? " from the expanded source" : ""}.</p>`
     : "";
-  const loadMore = remainingCount
+  const loadMore = usingVerifiedRanking && !query && !state.rankingExpanded
+    ? `<button class="load-more-schools ranking-more-button" id="show-top-100" type="button">More: show Top 100 + ties</button>`
+    : remainingCount
     ? `<button class="load-more-schools" id="load-more-schools" type="button">Show ${Math.min(120, remainingCount)} more schools</button>`
     : "";
 
@@ -1550,6 +1743,7 @@ document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
   button.addEventListener("click", () => {
     state.schoolSort = button.dataset.sort;
     state.visibleSchoolLimit = 120;
+    state.rankingExpanded = false;
     schoolResultsPanel.classList.remove("hidden");
     document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
       sortButton.classList.toggle("active", sortButton === button);
@@ -1559,6 +1753,12 @@ document.querySelectorAll(".mini-feature[data-sort]").forEach((button) => {
 });
 
 schoolPicker.addEventListener("click", (event) => {
+  if (event.target.closest("#show-top-100")) {
+    state.rankingExpanded = true;
+    renderSchoolPicker();
+    return;
+  }
+
   if (event.target.closest("#load-more-schools")) {
     state.visibleSchoolLimit += 120;
     renderSchoolPicker();
@@ -1646,6 +1846,7 @@ restartButton.addEventListener("click", () => {
   state.schoolSearch = "";
   state.schoolSort = "ranking";
   state.visibleSchoolLimit = 120;
+  state.rankingExpanded = false;
   window.currentResults = [];
   document.querySelector("#profile-form").reset();
   schoolSearch.value = "";

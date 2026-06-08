@@ -1,9 +1,23 @@
 {
   "source": "U.S. News & World Report 2026 Best Colleges",
   "sourceUrl": "https://www.usnews.com/best-colleges/rankings/national-universities",
-  "verifiedDate": "2026-06-05",
-  "releaseDate": "2025-09-22",
-  "sourceCheckedAt": "2026-06-05T22:22:46.567Z",
+  "verifiedDate": "2026-06-08",
+  "releaseDate": "2025-09-23",
+  "sourceCheckedAt": "2026-06-08T12:00:00.000Z",
+  "sources": [
+    {
+      "label": "U.S. News official 2026 release",
+      "url": "https://www.prnewswire.com/news-releases/us-news-announces-2026-best-colleges-rankings-302563669.html"
+    },
+    {
+      "label": "Ivy Coach Top 50 cross-check",
+      "url": "https://www.ivycoach.com/the-ivy-coach-blog/college-admissions/2026-college-rankings/"
+    },
+    {
+      "label": "Think Academy Top 100 ranking-shifts PDF",
+      "url": "https://www.thethinkacademy.com/blog/wp-content/uploads/2025/10/Think-Academy-Top-100-College-Ranking-Shifts-2026-vs.-2025.pdf"
+    }
+  ],
   "note": "Rankings are maintained as site data and refreshed by the scheduled GitHub Action. U.S. News does not publish a simple open public rankings API, so set RANKING_SOURCE_URL to a licensed/maintained JSON source for fully automatic rank changes.",
   "schools": {
     "Stanford University": {
@@ -15,7 +29,7 @@
       "category": "National Universities"
     },
     "University of Southern California": {
-      "rank": 27,
+      "rank": 28,
       "category": "National Universities"
     },
     "New York University": {
@@ -43,7 +57,7 @@
       "category": "National Universities"
     },
     "Northeastern University": {
-      "rank": 49,
+      "rank": 46,
       "category": "National Universities"
     },
     "University of Washington": {
@@ -51,7 +65,7 @@
       "category": "National Universities"
     },
     "Santa Clara University": {
-      "rank": 63,
+      "rank": 59,
       "category": "National Universities"
     },
     "University of Oregon": {

@@ -664,6 +664,15 @@ textarea {
   box-shadow: 0 16px 32px rgba(23, 33, 31, 0.13);
 }
 
+.ranking-more-button {
+  background:
+    radial-gradient(circle at 14% 50%, rgba(255, 199, 75, 0.7) 0 11px, transparent 12px),
+    radial-gradient(circle at 86% 50%, rgba(98, 205, 215, 0.55) 0 15px, transparent 16px),
+    linear-gradient(135deg, #184f47, #25786e);
+  color: #fffdf5;
+  border-color: rgba(255, 207, 99, 0.65);
+}
+
 .feature-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -797,6 +806,18 @@ textarea {
 .ranking-notice span {
   color: #41625d;
   line-height: 1.45;
+}
+
+.ranking-notice .ranking-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 0.86rem;
+}
+
+.ranking-sources a {
+  border-bottom: 1px solid rgba(22, 76, 69, 0.3);
+  text-decoration: none;
 }
 
 .search-field input {
