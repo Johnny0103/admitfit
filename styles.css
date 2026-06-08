@@ -1062,6 +1062,31 @@ textarea {
   line-height: 1.12;
 }
 
+.preview-photo-card figcaption a {
+  display: inline-block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.preview-photo-loading,
+.preview-photo-empty {
+  min-height: 360px;
+  border: 1px dashed #cbd6d0;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #52615d;
+  background:
+    linear-gradient(135deg, rgba(98, 205, 215, 0.16), transparent 44%),
+    linear-gradient(315deg, rgba(255, 191, 69, 0.2), transparent 44%),
+    rgba(255, 255, 255, 0.82);
+  text-align: center;
+  font-weight: 850;
+}
+
 .preview-photo-main::before {
   content: "";
   position: absolute;

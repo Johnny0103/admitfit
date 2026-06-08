@@ -458,6 +458,7 @@ let directoryPoolAdded = false;
 let directoryHydrationStarted = false;
 let scorecardSearchStatus = "idle";
 const scorecardSearchCache = new Map();
+const campusPhotoCache = new Map();
 let schoolSearchToken = 0;
 
 const rankingMetadata = {
@@ -952,7 +953,98 @@ function schoolLocationLabel(school) {
   return knownLocations[school.officialDomain] || `${labelize(school.region)} region`;
 }
 
-function schoolPhotoPanels(school) {
+function wikiTitleForSchool(school) {
+  const titleMap = {
+    "berkeley.edu": "University of California, Berkeley",
+    "ucsd.edu": "University of California, San Diego",
+    "ucsb.edu": "University of California, Santa Barbara",
+    "ucla.edu": "University of California, Los Angeles",
+    "uci.edu": "University of California, Irvine",
+    "ucdavis.edu": "University of California, Davis",
+    "ucsc.edu": "University of California, Santa Cruz",
+    "ucr.edu": "University of California, Riverside",
+    "ucmerced.edu": "University of California, Merced"
+  };
+  return titleMap[school.officialDomain] || school.name;
+}
+
+function isBlockedImage(title) {
+  const lower = title.toLowerCase();
+  if (!/\.(jpe?g|png)$/i.test(title)) return true;
+  return ["logo", "seal", "wordmark", "icon", "map", "flag", "athletics", "football", "basketball", "portrait", "headshot", "team", "mascot"].some((blocked) => lower.includes(blocked));
+}
+
+function campusImageScore(title, school) {
+  const lower = title.toLowerCase();
+  if (isBlockedImage(title)) return -100;
+  const schoolWords = school.name.toLowerCase().split(/[\s,.-]+/).filter((word) => word.length > 3);
+  const campusWords = ["campus", "quad", "library", "hall", "building", "chapel", "tower", "gate", "center", "commons", "dorm", "laboratory", "science", "auditorium", "college", "university", "classroom", "lagoon"];
+  const schoolScore = schoolWords.some((word) => lower.includes(word)) ? 4 : 0;
+  const campusScore = campusWords.reduce((sum, word) => sum + (lower.includes(word) ? 2 : 0), 0);
+  return schoolScore + campusScore;
+}
+
+function imageLabel(title) {
+  return title
+    .replace(/^File:/, "")
+    .replace(/\.(jpe?g|png)$/i, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function fetchCampusPhotos(school) {
+  const cacheKey = school.officialDomain || school.name;
+  if (campusPhotoCache.has(cacheKey)) return campusPhotoCache.get(cacheKey);
+
+  try {
+    const title = encodeURIComponent(wikiTitleForSchool(school));
+    const imageListUrl = `https://en.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=images&titles=${title}&imlimit=500`;
+    const listResponse = await fetchWithTimeout(imageListUrl, { cache: "force-cache" }, 5000);
+    if (!listResponse.ok) throw new Error(`Wikipedia images returned ${listResponse.status}`);
+    const listData = await listResponse.json();
+    const page = Object.values(listData.query?.pages || {})[0];
+    const fileTitles = (page?.images || [])
+      .map((item) => item.title)
+      .map((title) => ({ title, score: campusImageScore(title, school) }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.title)
+      .slice(0, 8);
+
+    if (!fileTitles.length) {
+      campusPhotoCache.set(cacheKey, []);
+      return [];
+    }
+
+    const files = fileTitles.map(encodeURIComponent).join("|");
+    const infoUrl = `https://en.wikipedia.org/w/api.php?origin=*&action=query&format=json&prop=imageinfo&iiprop=url|mime&iiurlwidth=1000&titles=${files}`;
+    const infoResponse = await fetchWithTimeout(infoUrl, { cache: "force-cache" }, 5000);
+    if (!infoResponse.ok) throw new Error(`Wikipedia image info returned ${infoResponse.status}`);
+    const infoData = await infoResponse.json();
+    const photos = Object.values(infoData.query?.pages || {})
+      .map((pageInfo) => {
+        const info = pageInfo.imageinfo?.[0];
+        if (!info || !info.mime?.startsWith("image/")) return null;
+        return {
+          url: info.thumburl || info.url,
+          sourceUrl: info.descriptionurl,
+          label: imageLabel(pageInfo.title)
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 5);
+
+    campusPhotoCache.set(cacheKey, photos);
+    return photos;
+  } catch (error) {
+    console.warn("Campus photo lookup failed.", error);
+    campusPhotoCache.set(cacheKey, []);
+    return [];
+  }
+}
+
+function schoolPhotoPanels(school, photos = null) {
   const initials = school.name
     .split(/[\s,-]+/)
     .filter(Boolean)
@@ -960,19 +1052,23 @@ function schoolPhotoPanels(school) {
     .map((word) => word[0])
     .join("");
   const photoTone = school.source === "directory" ? "Directory campus profile" : "Official campus profile";
-  const seedBase = encodeURIComponent((school.officialDomain || school.name).replace(/\W+/g, "-").toLowerCase());
-  const photoLabels = ["Campus quad", "Library view", "Student spaces", "Academic buildings"];
-  return `
-    <div class="preview-photo-scroll" aria-label="${school.name} campus pictures">
-      ${photoLabels.map((label, position) => `
+  const photoContent = photos === null
+    ? `<div class="preview-photo-loading">Loading actual campus photos...</div>`
+    : photos.length
+      ? photos.map((photo) => `
         <figure class="preview-photo-card">
-          <img src="https://picsum.photos/seed/${seedBase}-${position + 1}/900/560" alt="${school.name} ${label.toLowerCase()}" loading="lazy">
+          <img src="${photo.url}" alt="${school.name} ${photo.label}" loading="lazy">
           <figcaption>
-            <span>${label}</span>
+            <span>${photo.label}</span>
             <strong>${school.name}</strong>
+            <a href="${photo.sourceUrl}" target="_blank" rel="noreferrer">Wikimedia source</a>
           </figcaption>
         </figure>
-      `).join("")}
+      `).join("")
+      : `<div class="preview-photo-empty">No public campus photos were found for this school yet. Use the official website link for more images.</div>`;
+  return `
+    <div class="preview-photo-scroll" aria-label="${school.name} campus pictures">
+      ${photoContent}
     </div>
     <div class="preview-photo preview-photo-side">
       <span class="preview-initials">${initials}</span>
@@ -988,10 +1084,12 @@ function schoolPhotoPanels(school) {
 function renderSchoolPreview(index) {
   const school = schools[index];
   const selected = state.selectedSchools.includes(index);
+  const cacheKey = school.officialDomain || school.name;
+  const cachedPhotos = campusPhotoCache.has(cacheKey) ? campusPhotoCache.get(cacheKey) : null;
   schoolPreview.innerHTML = `
     <article class="preview-card">
       <div class="preview-photos" aria-label="${school.name} official photo area">
-        ${schoolPhotoPanels(school)}
+        ${schoolPhotoPanels(school, cachedPhotos)}
       </div>
       <div class="preview-copy">
         <span class="tag ${school.source === "directory" ? "likely" : "match"}">${rankLabel(school)}</span>
@@ -1016,6 +1114,13 @@ function renderSchoolPreview(index) {
     </div>
   `;
   showView("schoolPreview", "School preview");
+  if (cachedPhotos === null) {
+    fetchCampusPhotos(school).then((photos) => {
+      if (views.schoolPreview.classList.contains("hidden")) return;
+      const photoPanel = schoolPreview.querySelector(".preview-photos");
+      if (photoPanel) photoPanel.innerHTML = schoolPhotoPanels(school, photos);
+    });
+  }
 }
 
 async function renderSchoolPicker() {
