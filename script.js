@@ -1396,19 +1396,56 @@ async function renderSchoolPicker() {
 
 function renderYourList() {
   const selected = state.selectedSchools.map((index) => schools[index]);
+  const averageAdmit = selected.length
+    ? Math.round(selected.reduce((sum, school) => sum + school.admitRate, 0) / selected.length)
+    : 0;
+  const topRanked = selected.filter((school) => school.usNewsRank && school.usNewsRank < 50).length;
+  const regions = [...new Set(selected.map((school) => labelize(school.region)))].slice(0, 3);
   notePage.innerHTML = `
-    <h3>Your AdmitFit List</h3>
-    <p>${selected.length ? "A sweet little note for the schools you picked. Keep this list balanced, brave, and practical." : "Your list is waiting for its first school. Go pick a few colleges that feel exciting and realistic."}</p>
+    <div class="note-hero">
+      <div>
+        <span class="note-kicker">AdmitFit dream deck</span>
+        <h3>Your AdmitFit List</h3>
+        <p>${selected.length ? "A polished board for the schools you picked. Keep it ambitious, balanced, and personal." : "Your list is waiting for its first school. Pick a few colleges that feel exciting and realistic."}</p>
+      </div>
+      <div class="note-stats" aria-label="Your list summary">
+        <span><strong>${selected.length}</strong> school${selected.length === 1 ? "" : "s"}</span>
+        <span><strong>${topRanked}</strong> top 50</span>
+        <span><strong>${selected.length ? `${averageAdmit}%` : "--"}</strong> avg admit</span>
+      </div>
+    </div>
+    ${selected.length ? `
+      <div class="note-ribbon">
+        <span>${regions.length ? regions.join(" + ") : "Regions open"}</span>
+        <span>Up to 10 schools</span>
+        <span>${10 - selected.length} spots left</span>
+      </div>
+    ` : ""}
     <div class="note-list">
       ${selected.map((school, position) => `
-        <article class="note-school">
-          <span class="note-school-icon">${schoolIcon(school)}</span>
-          <div>
-            <strong>${position + 1}. ${school.name}</strong>
-            <span>${rankLabel(school)} · ${labelize(school.region)} · ${labelize(school.size)} campus · ${school.admitRate}% admit rate</span>
+        <article class="note-school" style="--card-hue:${(position * 54 + 18) % 360}">
+          <div class="note-school-top">
+            <span class="note-school-number">${String(position + 1).padStart(2, "0")}</span>
+            <span class="note-school-icon">${schoolIcon(school)}</span>
+          </div>
+          <div class="note-school-body">
+            <strong>${school.name}</strong>
+            <div class="note-chip-row">
+              <span>${rankLabel(school)}</span>
+              <span>${labelize(school.region)}</span>
+              <span>${labelize(school.size)} campus</span>
+              <span>${school.admitRate}% admit</span>
+            </div>
+            <p>${school.traits.slice(0, 2).join(" + ") || "A school to explore more deeply."}</p>
           </div>
         </article>
-      `).join("")}
+      `).join("") || `
+        <div class="note-empty">
+          <span class="note-empty-mark">AF</span>
+          <strong>Build a list with personality.</strong>
+          <p>Select schools from verified rankings or popular picks, then come back here to see your personal college board take shape.</p>
+        </div>
+      `}
     </div>
   `;
 }
