@@ -345,31 +345,35 @@
         </section>
 
         <section class="view hidden" id="results-view">
-          <div class="results-summary" id="results-summary"></div>
-          <div class="results-highlights" aria-label="How to read results">
-            <article>
-              <span class="dot dot-fit"></span>
-              <strong>Match score</strong>
-              <p>How well your preferences, setting, activities, and personal strengths line up with the campus.</p>
-            </article>
-            <article>
-              <span class="dot dot-admit"></span>
-              <strong>Admission estimate</strong>
-              <p>A planning estimate using selectivity, academics, readiness, and application strength.</p>
-            </article>
-            <article>
-              <span class="dot dot-action"></span>
-              <strong>Next action</strong>
-              <p>Use each checklist to decide what to polish before applying.</p>
-            </article>
+          <div class="results-layout">
+            <aside class="results-summary" id="results-summary"></aside>
+            <div>
+              <div class="tabs" role="tablist" aria-label="Result type">
+                <button class="tab active" id="all-tab" type="button" data-filter="all">All</button>
+                <button class="tab" type="button" data-filter="reach">Reach</button>
+                <button class="tab" type="button" data-filter="match">Match</button>
+                <button class="tab" type="button" data-filter="likely">Likely</button>
+              </div>
+              <div class="results-grid" id="results-grid"></div>
+            </div>
           </div>
-          <div class="tabs" role="tablist" aria-label="Result type">
-            <button class="tab active" id="all-tab" type="button" data-filter="all">All</button>
-            <button class="tab" type="button" data-filter="reach">Reach</button>
-            <button class="tab" type="button" data-filter="match">Match</button>
-            <button class="tab" type="button" data-filter="likely">Likely</button>
+          <div class="form-actions">
+            <button class="primary-button" id="next-steps-button" type="button">What to do next</button>
           </div>
-          <div class="results-grid" id="results-grid"></div>
+        </section>
+
+        <section class="view hidden" id="next-view">
+          <div class="next-board">
+            <div class="next-intro">
+              <span class="note-kicker">Improvement plan</span>
+              <h3>What to do next</h3>
+              <p>Focus on the moves that make your application clearer, stronger, and more personal for these schools.</p>
+            </div>
+            <div class="next-grid" id="next-grid"></div>
+          </div>
+          <div class="form-actions">
+            <button class="secondary-button" id="next-back-button" type="button">Back to results</button>
+          </div>
         </section>
       </section>
     </main>

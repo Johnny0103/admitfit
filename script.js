@@ -610,7 +610,8 @@ const views = {
   list: document.querySelector("#list-view"),
   schoolPreview: document.querySelector("#school-preview-view"),
   profile: document.querySelector("#profile-view"),
-  results: document.querySelector("#results-view")
+  results: document.querySelector("#results-view"),
+  next: document.querySelector("#next-view")
 };
 
 const viewTitle = document.querySelector("#view-title");
@@ -628,6 +629,7 @@ const selectedCount = document.querySelector("#selected-count");
 const notePage = document.querySelector("#note-page");
 const resultsGrid = document.querySelector("#results-grid");
 const resultsSummary = document.querySelector("#results-summary");
+const nextGrid = document.querySelector("#next-grid");
 
 const materialMap = {
   transcript: "Transcript request",
@@ -1052,7 +1054,7 @@ function showView(name, title) {
   views[name].classList.remove("hidden");
   viewTitle.textContent = title;
   restartButton.classList.toggle("hidden", name === "login");
-  yourListButton.classList.toggle("hidden", !["school", "schoolPreview", "list", "profile", "results"].includes(name));
+  yourListButton.classList.toggle("hidden", !["school", "schoolPreview", "list", "profile", "results", "next"].includes(name));
   appShell.classList.toggle("focus-mode", name !== "login");
   if (name === "login") {
     appShell.classList.remove("login-open");
@@ -1602,6 +1604,63 @@ function buildChecklist(profile, school) {
   });
 }
 
+function compactResultLine(avgMatch, avgChance, results) {
+  const reaches = results.filter((item) => item.category === "reach").length;
+  const matches = results.filter((item) => item.category === "match").length;
+  const likely = results.filter((item) => item.category === "likely").length;
+  return [
+    `${avgMatch}% fit avg`,
+    `${avgChance}% admit avg`,
+    `${reaches} reach`,
+    `${matches} match`,
+    `${likely} likely`
+  ];
+}
+
+function scoreDial(label, value, type) {
+  return `
+    <div class="score-dial ${type}" style="--score:${value}">
+      <div class="score-orbit">
+        <strong>${value}%</strong>
+      </div>
+      <span>${label}</span>
+    </div>
+  `;
+}
+
+function buildImprovementPlan(profile, result) {
+  const school = result.school;
+  const actions = [];
+  if (profile.gpa < school.avgGpa || profile.rigor < school.rigor) {
+    actions.push("Raise academic proof: stronger grades, harder courses, or a clean upward trend.");
+  }
+  if (profile.sat < school.avgSat && !profile.act) {
+    actions.push("Improve testing plan or confirm test-optional strategy before applying.");
+  }
+  if (profile.activities.length < 3) {
+    actions.push("Add depth: choose 2-3 activities and show leadership, impact, or consistency.");
+  }
+  if (!profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) {
+    actions.push("Write sharper activity descriptions with numbers, role, and real results.");
+  }
+  if (!profile.shiningPoint) {
+    actions.push("Define your shining point: everyone has one! Turn it into an essay theme.");
+  }
+  if (profile.essays < 8) {
+    actions.push("Revise essays until the school can hear your voice and your reason for fit.");
+  }
+  if (profile.recommendations < 8) {
+    actions.push("Ask recommenders for stories that prove curiosity, character, and follow-through.");
+  }
+  if (profile.materials.length < Object.keys(materialMap).length) {
+    actions.push("Finish missing materials early: transcript, supplements, aid forms, and test policy.");
+  }
+  if (result.match < 70) {
+    actions.push(`Connect your goals to ${school.name}'s programs, setting, and campus style.`);
+  }
+  return actions.slice(0, 3);
+}
+
 function renderResults(profile) {
   const sourceSchools = state.flow === "evaluate"
     ? state.selectedSchools.map((index) => schools[index])
@@ -1612,15 +1671,20 @@ function renderResults(profile) {
     .sort((a, b) => state.flow === "recommend" ? b.match + b.chance - (a.match + a.chance) : 0);
 
   window.currentResults = results;
+  window.currentProfile = profile;
   state.activeFilter = "all";
   document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.filter === "all"));
-  renderResultCards();
   const avgMatch = Math.round(results.reduce((sum, item) => sum + item.match, 0) / results.length);
   const avgChance = Math.round(results.reduce((sum, item) => sum + item.chance, 0) / results.length);
   resultsSummary.innerHTML = `
-    <h3>${state.flow === "evaluate" ? "Selected school evaluation" : "Recommended college list"}</h3>
-    <p>${state.user.name}, your list averages a ${avgMatch}% match score and an estimated ${avgChance}% admission chance. Percentages are planning estimates based on the data entered, not guarantees or official admissions decisions.</p>
+    <span class="note-kicker">${state.flow === "evaluate" ? "Selected results" : "Suggested results"}</span>
+    <h3>${state.user.name}'s snapshot</h3>
+    <div class="summary-mini-grid">
+      ${compactResultLine(avgMatch, avgChance, results).map((item) => `<span>${item}</span>`).join("")}
+    </div>
+    <p>Planning estimates only.</p>
   `;
+  renderResultCards();
   showView("results", "Results");
 }
 
@@ -1638,39 +1702,56 @@ function renderResultCards() {
   const filtered = state.activeFilter === "all" ? results : results.filter((item) => item.category === state.activeFilter);
   resultsGrid.innerHTML = filtered.map((item) => `
     <article class="result-card" data-category="${item.category}">
-      <div class="result-meta">
-        <span class="tag ${item.category}">${labelize(item.category)}</span>
-        <span class="pill">${rankLabel(item.school)}</span>
-        <span class="pill">${item.school.usNewsCategory}</span>
-        <span class="pill">${labelize(item.school.region)}</span>
-        <span class="pill">${labelize(item.school.size)}</span>
-        <span class="pill">${item.school.admitRate}% baseline admit rate</span>
+      <div class="result-card-top">
+        <div>
+          <div class="result-meta">
+            <span class="tag ${item.category}">${labelize(item.category)}</span>
+            <span class="pill">${rankLabel(item.school)}</span>
+            <span class="pill">${labelize(item.school.region)}</span>
+            <span class="pill">${item.school.admitRate}% baseline</span>
+          </div>
+          <h3>${item.school.name}</h3>
+        </div>
+        <span class="result-school-icon">${schoolIcon(item.school)}</span>
       </div>
-      <h3>${item.school.name}</h3>
       <div class="score-row">
-        <div class="score-box">
-          <span>AdmitFit match</span>
-          <strong>${item.match}%</strong>
-          <div class="meter"><span style="width:${item.match}%"></span></div>
-        </div>
-        <div class="score-box">
-          <span>Estimated admission chance</span>
-          <strong>${item.chance}%</strong>
-          <div class="meter admit"><span style="width:${item.chance}%"></span></div>
-        </div>
+        ${scoreDial("Fit", item.match, "fit")}
+        ${scoreDial("Admit", item.chance, "admit")}
       </div>
       <div class="details-grid">
         <div class="detail-box">
-          <h4>Profile match</h4>
+          <h4>Why it fits</h4>
           <ul>${item.strengths.map((strength) => `<li>${strength}</li>`).join("")}</ul>
         </div>
         <div class="detail-box">
-          <h4>Application checklist</h4>
+          <h4>Checklist</h4>
           <ul>${item.checklist.slice(0, 6).map((task) => `<li>${task}</li>`).join("")}</ul>
         </div>
       </div>
     </article>
   `).join("") || `<p class="helper-text">No schools in this category yet.</p>`;
+}
+
+function renderNextSteps() {
+  const results = window.currentResults || [];
+  const profile = window.currentProfile;
+  nextGrid.innerHTML = results.map((item, index) => {
+    const actions = profile ? buildImprovementPlan(profile, item) : ["Complete your profile first, then return for a custom plan."];
+    return `
+      <article class="next-card" style="--card-hue:${(index * 46 + 28) % 360}">
+        <div class="next-card-head">
+          <span class="next-number">${String(index + 1).padStart(2, "0")}</span>
+          <div>
+            <strong>${item.school.name}</strong>
+            <span>${labelize(item.category)} · ${item.match}% fit · ${item.chance}% admit</span>
+          </div>
+        </div>
+        <ol>
+          ${actions.map((action) => `<li>${action}</li>`).join("")}
+        </ol>
+      </article>
+    `;
+  }).join("") || `<p class="helper-text">Run results first to see a custom improvement plan.</p>`;
 }
 
 document.querySelector("#login-form").addEventListener("submit", (event) => {
@@ -1876,6 +1957,15 @@ document.querySelector(".tabs").addEventListener("click", (event) => {
   renderResultCards();
 });
 
+document.querySelector("#next-steps-button").addEventListener("click", () => {
+  renderNextSteps();
+  showView("next", "What to do next");
+});
+
+document.querySelector("#next-back-button").addEventListener("click", () => {
+  showView("results", "Results");
+});
+
 restartButton.addEventListener("click", () => {
   state.flow = null;
   state.selectedSchools = [];
@@ -1885,6 +1975,7 @@ restartButton.addEventListener("click", () => {
   state.visibleSchoolLimit = 120;
   state.rankingExpanded = false;
   window.currentResults = [];
+  window.currentProfile = null;
   document.querySelector("#profile-form").reset();
   schoolSearch.value = "";
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
