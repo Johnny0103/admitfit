@@ -44,6 +44,7 @@ button {
 }
 
 .app-shell:not(.focus-mode) {
+  --login-dim: 0;
   position: relative;
   grid-template-columns: 1fr;
   place-items: end center;
@@ -61,23 +62,14 @@ button {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04));
-  opacity: 1;
-  transition: opacity 300ms ease, background 300ms ease;
-}
-
-.app-shell.login-open:not(.focus-mode) {
-  background:
-    radial-gradient(circle at 18% 16%, rgba(255, 222, 132, 0.3) 0 140px, transparent 142px),
-    linear-gradient(135deg, #080705 0%, #1a1308 48%, #8c6525 100%),
-    #080705;
+    radial-gradient(circle at 50% 36%, transparent 0 32%, rgba(4, 8, 7, 0.16) 66%, rgba(4, 8, 7, 0.32) 100%),
+    linear-gradient(180deg, rgba(4, 8, 7, 0.04), rgba(4, 8, 7, 0.26));
+  opacity: var(--login-dim);
+  transition: opacity 360ms ease;
 }
 
 .app-shell.login-open:not(.focus-mode)::after {
-  background:
-    radial-gradient(circle at 50% 36%, transparent 0 28%, rgba(4, 8, 7, 0.22) 62%, rgba(4, 8, 7, 0.52) 100%),
-    linear-gradient(180deg, rgba(4, 8, 7, 0.1), rgba(4, 8, 7, 0.48));
-  opacity: 1;
+  opacity: var(--login-dim);
 }
 
 .app-shell.focus-mode {
@@ -164,7 +156,10 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(1.18) contrast(1.04) saturate(1.08);
+  filter:
+    brightness(calc(1.18 - (var(--login-dim, 0) * 0.3)))
+    contrast(calc(1.04 + (var(--login-dim, 0) * 0.06)))
+    saturate(calc(1.08 - (var(--login-dim, 0) * 0.08)));
   transition: filter 320ms ease, transform 520ms ease;
 }
 
@@ -184,14 +179,14 @@ button {
 }
 
 .app-shell.login-open:not(.focus-mode) .hero-panel img {
-  filter: brightness(0.7) contrast(1.14) saturate(0.9);
   transform: scale(1.015);
 }
 
 .app-shell.login-open:not(.focus-mode) .hero-panel::after {
   background:
-    radial-gradient(circle at 50% 48%, rgba(7, 12, 11, 0.1) 0 26%, rgba(7, 12, 11, 0.52) 68%, rgba(7, 12, 11, 0.72) 100%),
-    linear-gradient(135deg, rgba(7, 6, 4, 0.5) 0%, rgba(28, 22, 11, 0.38) 48%, rgba(93, 63, 16, 0.45) 100%);
+    radial-gradient(circle at 50% 48%, rgba(7, 12, 11, 0.04) 0 28%, rgba(7, 12, 11, 0.26) 70%, rgba(7, 12, 11, 0.38) 100%),
+    linear-gradient(135deg, rgba(7, 6, 4, 0.24) 0%, rgba(28, 22, 11, 0.2) 48%, rgba(93, 63, 16, 0.22) 100%),
+    linear-gradient(135deg, rgba(255, 250, 224, 0.16) 0%, rgba(255, 243, 200, 0.1) 48%, rgba(98, 205, 215, 0.08) 100%);
 }
 
 .brand-logo {

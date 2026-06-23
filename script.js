@@ -1062,7 +1062,13 @@ function showView(name, title) {
     loginWorkspace.style.removeProperty("--login-sheet-shift");
     loginSwipeButton.setAttribute("aria-expanded", "false");
     loginSheetProgress = 0;
+    setLoginVisualProgress(0);
   }
+}
+
+function setLoginVisualProgress(value) {
+  const progress = clamp(value, 0, 1);
+  appShell.style.setProperty("--login-dim", progress.toFixed(3));
 }
 
 function openLoginSheet() {
@@ -1071,6 +1077,7 @@ function openLoginSheet() {
   appShell.classList.add("login-open");
   loginSwipeButton.setAttribute("aria-expanded", "true");
   loginSheetProgress = 1;
+  setLoginVisualProgress(1);
 }
 
 function closeLoginSheet() {
@@ -1079,6 +1086,7 @@ function closeLoginSheet() {
   appShell.classList.remove("login-open");
   loginSwipeButton.setAttribute("aria-expanded", "false");
   loginSheetProgress = 0;
+  setLoginVisualProgress(0);
 }
 
 function isFormInteraction(target) {
@@ -1788,9 +1796,11 @@ appShell.addEventListener("pointermove", (event) => {
   if (appShell.classList.contains("login-open")) {
     const dismiss = Math.max(0, -distance * 2.4);
     loginWorkspace.style.setProperty("--login-sheet-shift", `calc(-20vh + ${dismiss}px)`);
+    setLoginVisualProgress(1 - dismiss / 560);
   } else {
     const reveal = Math.min(560, Math.max(0, distance) * 4.2);
     loginWorkspace.style.setProperty("--login-sheet-shift", `calc(100% - ${reveal}px)`);
+    setLoginVisualProgress(reveal / 560);
   }
 });
 
@@ -1808,6 +1818,7 @@ appShell.addEventListener("pointerup", (event) => {
   } else {
     appShell.classList.remove("is-dragging");
     loginWorkspace.style.removeProperty("--login-sheet-shift");
+    setLoginVisualProgress(wasOpen ? 1 : 0);
   }
 });
 
@@ -1816,6 +1827,7 @@ appShell.addEventListener("pointercancel", () => {
   loginDragCurrent = null;
   appShell.classList.remove("is-dragging");
   loginWorkspace.style.removeProperty("--login-sheet-shift");
+  setLoginVisualProgress(appShell.classList.contains("login-open") ? 1 : 0);
 });
 
 appShell.addEventListener("wheel", (event) => {
@@ -1827,6 +1839,7 @@ appShell.addEventListener("wheel", (event) => {
   const shift = 100 - loginSheetProgress * 120;
   appShell.classList.add("is-dragging");
   loginWorkspace.style.setProperty("--login-sheet-shift", `${shift}vh`);
+  setLoginVisualProgress(loginSheetProgress);
 
   clearTimeout(loginWheelTimer);
   loginWheelTimer = setTimeout(() => {
