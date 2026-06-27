@@ -256,10 +256,44 @@
                   <option value="10">Confirmed and highly personal</option>
                 </select>
               </label>
-              <label class="wide-field">
-                What is your shining point? <span>Optional. Everyone has one!</span>
-                <textarea name="shiningPoint" rows="4" placeholder="A personal strength, story, project, responsibility, challenge, or community impact that makes you memorable."></textarea>
-              </label>
+              <div class="wide-field form-field">
+                <label for="shining-point">What is your shining point? <span>Optional. Everyone has one!</span></label>
+                <div class="shining-grid" aria-label="Shining point options">
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="athletics">
+                    <span>Athletics</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="leadership">
+                    <span>Leadership</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="service">
+                    <span>Service</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="research">
+                    <span>Research</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="creativity">
+                    <span>Creativity</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="resilience">
+                    <span>Resilience</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="initiative">
+                    <span>Initiative</span>
+                  </label>
+                  <label class="shining-chip">
+                    <input type="checkbox" name="shiningTypes" value="community">
+                    <span>Community impact</span>
+                  </label>
+                </div>
+                <textarea id="shining-point" name="shiningPoint" rows="4" placeholder="A personal strength, story, project, responsibility, challenge, or community impact that makes you memorable."></textarea>
+              </div>
               </div>
               <fieldset class="activity-fieldset">
                 <legend>Extracurricular activities</legend>

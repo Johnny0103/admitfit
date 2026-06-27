@@ -448,7 +448,8 @@ button {
   display: none;
 }
 
-label {
+label,
+.form-field {
   display: grid;
   gap: 8px;
   color: #30413d;
@@ -485,11 +486,50 @@ textarea {
   grid-column: 1 / -1;
 }
 
-.wide-field span,
+.wide-field > label span,
 .field-help {
   color: var(--muted);
   font-weight: 700;
   font-size: 0.86rem;
+}
+
+.shining-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 4px;
+}
+
+.shining-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 1px solid rgba(23, 76, 69, 0.14);
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #174c45;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 246, 213, 0.82));
+  box-shadow: 0 8px 16px rgba(23, 33, 31, 0.06);
+  font-weight: 900;
+}
+
+.shining-chip input {
+  width: 14px;
+  min-height: 14px;
+  accent-color: var(--accent);
+}
+
+.shining-chip:has(input:checked) {
+  border-color: rgba(38, 112, 100, 0.48);
+  color: #fff;
+  background: linear-gradient(135deg, #267064, #174c45);
+}
+
+.shining-chip:has(input:checked) span {
+  color: #fff;
 }
 
 .activity-fieldset {

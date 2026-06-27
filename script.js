@@ -1485,6 +1485,7 @@ function parseProfile(form) {
     activityDescriptions,
     essays: Number(data.get("essays")),
     recommendations: Number(data.get("recommendations")),
+    shiningTypes: data.getAll("shiningTypes"),
     shiningPoint: String(data.get("shiningPoint") || "").trim(),
     materials: data.getAll("materials")
   };
@@ -1526,8 +1527,9 @@ function activityCharacterStrength(profile) {
   const leadershipBonus = profile.activities.includes("leadership") || profile.activities.includes("entrepreneurship") ? 12 : 0;
   const careBonus = profile.activities.includes("service") || profile.activities.includes("work") ? 8 : 0;
   const depthScore = selected ? Math.min(40, selected * 7) + described * 7 : 12;
+  const shiningTypeBonus = Math.min(14, (profile.shiningTypes || []).length * 4);
   const shiningBonus = profile.shiningPoint.length >= 35 ? 12 : profile.shiningPoint.length ? 6 : 0;
-  return clamp(24 + depthScore + leadershipBonus + careBonus + shiningBonus, 12, 100);
+  return clamp(24 + depthScore + leadershipBonus + careBonus + shiningTypeBonus + shiningBonus, 12, 100);
 }
 
 function fitScore(profile, school) {
@@ -1581,7 +1583,7 @@ function buildStrengths(profile, school, match, chance) {
   if (profile.setting === "any" || profile.setting === schoolSetting(school)) items.push("Geographical setting preference matches the campus environment.");
   if (profile.activities.length >= 3) items.push("Extracurricular profile shows range across multiple commitments.");
   if (profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) items.push("Activity descriptions add character and real evidence beyond scores.");
-  if (profile.shiningPoint) items.push("Your shining point gives the application a personal theme to build around.");
+  if (profile.shiningTypes?.length || profile.shiningPoint) items.push("Your shining point gives the application a personal theme to build around.");
   if (profile.gpa >= school.avgGpa) items.push("GPA is at or above this school's typical profile.");
   if (profile.sat >= school.avgSat) items.push("SAT score is at or above the school benchmark used here.");
   if (!items.length) items.push("This school remains possible, but the profile has several fit gaps to strengthen.");
@@ -1651,8 +1653,10 @@ function buildImprovementPlan(profile, result) {
   if (!profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) {
     actions.push("Write sharper activity descriptions with numbers, role, and real results.");
   }
-  if (!profile.shiningPoint) {
+  if (!profile.shiningTypes?.length && !profile.shiningPoint) {
     actions.push("Define your shining point: everyone has one! Turn it into an essay theme.");
+  } else if (profile.shiningTypes?.length && profile.shiningPoint.length < 35) {
+    actions.push(`Turn ${profile.shiningTypes.slice(0, 2).map(labelize).join(" and ").toLowerCase()} into a specific story with proof.`);
   }
   if (profile.essays < 8) {
     actions.push("Revise essays until the school can hear your voice and your reason for fit.");
