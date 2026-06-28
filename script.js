@@ -630,6 +630,8 @@ const notePage = document.querySelector("#note-page");
 const resultsGrid = document.querySelector("#results-grid");
 const resultsSummary = document.querySelector("#results-summary");
 const nextGrid = document.querySelector("#next-grid");
+const activityBuilder = document.querySelector("#activity-builder");
+const addActivityButton = document.querySelector("#add-activity-button");
 
 const materialMap = {
   transcript: "Transcript request",
@@ -639,6 +641,42 @@ const materialMap = {
   fafsa: "FAFSA / CSS Profile plan",
   supplements: "Supplemental essays"
 };
+
+const activityTypeOptions = [
+  ["work", "Work / job"],
+  ["volunteer", "Volunteer service"],
+  ["leadership", "Leadership"],
+  ["athletics", "Athletics"],
+  ["research", "Research / academic project"],
+  ["arts", "Arts / writing / performance"],
+  ["entrepreneurship", "Entrepreneurship / initiative"],
+  ["club", "Club / competition"],
+  ["family", "Family responsibility"],
+  ["other", "Other"]
+];
+
+function activityEntryTemplate() {
+  return `
+    <div class="activity-entry">
+      <div class="activity-type-field">
+        <span>Activity type</span>
+        <input type="hidden" name="activityType" value="">
+        <button class="activity-select-trigger" type="button" aria-expanded="false">Choose type</button>
+        <div class="activity-select-menu">
+          ${activityTypeOptions.map(([value, label]) => `<button type="button" data-value="${value}">${label}</button>`).join("")}
+        </div>
+      </div>
+      <label>
+        Description
+        <textarea name="activityDescription" rows="3" placeholder="Role, time spent, responsibility, result, or impact"></textarea>
+      </label>
+    </div>
+  `;
+}
+
+function resetActivityBuilder() {
+  activityBuilder.innerHTML = activityEntryTemplate();
+}
 
 async function loadRankingData() {
   try {
@@ -1466,11 +1504,14 @@ function labelize(value) {
 
 function parseProfile(form) {
   const data = new FormData(form);
-  const activities = data.getAll("activities");
-  const activityDescriptions = Object.fromEntries(activities.map((activity) => [
-    activity,
-    String(data.get(`activity_${activity}`) || "").trim()
-  ]));
+  const activityTypes = data.getAll("activityType");
+  const activityDescriptions = data.getAll("activityDescription");
+  const activities = activityTypes
+    .map((type, index) => ({
+      type,
+      description: String(activityDescriptions[index] || "").trim()
+    }))
+    .filter((activity) => activity.type || activity.description);
   return {
     gpa: Number(data.get("gpa")),
     sat: Number(data.get("sat")),
@@ -1482,7 +1523,6 @@ function parseProfile(form) {
     schoolType: data.get("schoolType"),
     setting: data.get("setting"),
     activities,
-    activityDescriptions,
     essays: Number(data.get("essays")),
     recommendations: Number(data.get("recommendations")),
     shiningTypes: data.getAll("shiningTypes"),
@@ -1521,15 +1561,17 @@ function schoolSetting(school) {
   return school.size === "large" ? "city" : "suburban";
 }
 
-function activityCharacterStrength(profile) {
-  const selected = profile.activities.length;
-  const described = profile.activities.filter((activity) => (profile.activityDescriptions[activity] || "").length >= 18).length;
-  const leadershipBonus = profile.activities.includes("leadership") || profile.activities.includes("entrepreneurship") ? 12 : 0;
-  const careBonus = profile.activities.includes("service") || profile.activities.includes("work") ? 8 : 0;
-  const depthScore = selected ? Math.min(40, selected * 7) + described * 7 : 12;
+function activityStrength(profile) {
+  const activities = profile.activities || [];
+  const typedCount = activities.filter((activity) => activity.type).length;
+  const describedCount = activities.filter((activity) => activity.description.length >= 22).length;
+  const types = activities.map((activity) => activity.type);
+  const leadershipBonus = types.includes("leadership") || types.includes("entrepreneurship") ? 10 : 0;
+  const serviceBonus = types.includes("volunteer") || types.includes("work") || types.includes("family") ? 8 : 0;
+  const depthBonus = Math.min(28, typedCount * 7) + Math.min(24, describedCount * 8);
   const shiningTypeBonus = Math.min(14, (profile.shiningTypes || []).length * 4);
   const shiningBonus = profile.shiningPoint.length >= 35 ? 12 : profile.shiningPoint.length ? 6 : 0;
-  return clamp(24 + depthScore + leadershipBonus + careBonus + shiningTypeBonus + shiningBonus, 12, 100);
+  return clamp(26 + depthBonus + leadershipBonus + serviceBonus + shiningTypeBonus + shiningBonus, 12, 100);
 }
 
 function fitScore(profile, school) {
@@ -1538,14 +1580,14 @@ function fitScore(profile, school) {
   const sizeFit = profile.size === "any" || profile.size === school.size ? 100 : 68;
   const typeFit = profile.schoolType === "any" || profile.schoolType === schoolType(school) ? 100 : 62;
   const settingFit = profile.setting === "any" || profile.setting === schoolSetting(school) ? 100 : 64;
-  const characterFit = activityCharacterStrength(profile);
-  return Math.round(majorFit * 0.22 + regionFit * 0.15 + sizeFit * 0.1 + typeFit * 0.14 + settingFit * 0.15 + characterFit * 0.24);
+  const characterFit = activityStrength(profile);
+  return Math.round(majorFit * 0.21 + regionFit * 0.14 + sizeFit * 0.09 + typeFit * 0.12 + settingFit * 0.14 + characterFit * 0.3);
 }
 
 function admissionChance(profile, school) {
   const academic = academicStrength(profile, school);
   const tests = testStrength(profile, school);
-  const character = activityCharacterStrength(profile);
+  const character = activityStrength(profile);
   const application = character * 0.42 + (profile.essays * 10) * 0.32 + (profile.recommendations * 10) * 0.26;
   const readiness = profile.materials.length / Object.keys(materialMap).length;
   const fit = fitScore(profile, school);
@@ -1581,8 +1623,8 @@ function buildStrengths(profile, school, match, chance) {
   if (profile.size === "any" || profile.size === school.size) items.push("Campus size preference is aligned.");
   if (profile.schoolType === "any" || profile.schoolType === schoolType(school)) items.push(`${labelize(profile.schoolType === "any" ? schoolType(school) : profile.schoolType)} school preference fits this college.`);
   if (profile.setting === "any" || profile.setting === schoolSetting(school)) items.push("Geographical setting preference matches the campus environment.");
-  if (profile.activities.length >= 3) items.push("Extracurricular profile shows range across multiple commitments.");
-  if (profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) items.push("Activity descriptions add character and real evidence beyond scores.");
+  if ((profile.activities || []).length >= 2) items.push("Activity list shows range beyond classroom performance.");
+  if ((profile.activities || []).some((activity) => activity.description.length >= 22)) items.push("Activity descriptions add real context beyond scores.");
   if (profile.shiningTypes?.length || profile.shiningPoint) items.push("Your shining point gives the application a personal theme to build around.");
   if (profile.gpa >= school.avgGpa) items.push("GPA is at or above this school's typical profile.");
   if (profile.sat >= school.avgSat) items.push("SAT score is at or above the school benchmark used here.");
@@ -1647,11 +1689,10 @@ function buildImprovementPlan(profile, result) {
   if (profile.sat < school.avgSat && !profile.act) {
     actions.push("Improve testing plan or confirm test-optional strategy before applying.");
   }
-  if (profile.activities.length < 3) {
-    actions.push("Add depth: choose 2-3 activities and show leadership, impact, or consistency.");
-  }
-  if (!profile.activities.some((activity) => (profile.activityDescriptions[activity] || "").length >= 18)) {
-    actions.push("Write sharper activity descriptions with numbers, role, and real results.");
+  if (!(profile.activities || []).length) {
+    actions.push("Add at least one activity with type, role, responsibility, and impact.");
+  } else if (!(profile.activities || []).some((activity) => activity.description.length >= 35)) {
+    actions.push("Strengthen an activity description with action, time spent, result, and what it proves.");
   }
   if (!profile.shiningTypes?.length && !profile.shiningPoint) {
     actions.push("Define your shining point: everyone has one! Turn it into an essay theme.");
@@ -1961,6 +2002,46 @@ document.querySelector("#profile-back-button").addEventListener("click", () => {
   else showView("choice", "Choose a path");
 });
 
+addActivityButton.addEventListener("click", () => {
+  activityBuilder.insertAdjacentHTML("beforeend", activityEntryTemplate());
+});
+
+activityBuilder.addEventListener("click", (event) => {
+  const trigger = event.target.closest(".activity-select-trigger");
+  const option = event.target.closest(".activity-select-menu button");
+
+  if (trigger) {
+    const field = trigger.closest(".activity-type-field");
+    const isOpen = field.classList.contains("open");
+    activityBuilder.querySelectorAll(".activity-type-field.open").forEach((item) => {
+      item.classList.remove("open");
+      item.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+    });
+    field.classList.toggle("open", !isOpen);
+    trigger.setAttribute("aria-expanded", String(!isOpen));
+    return;
+  }
+
+  if (option) {
+    const field = option.closest(".activity-type-field");
+    field.querySelector("input[name='activityType']").value = option.dataset.value;
+    field.querySelector(".activity-select-trigger").textContent = option.textContent;
+    field.querySelectorAll(".activity-select-menu button").forEach((button) => {
+      button.classList.toggle("selected", button === option);
+    });
+    field.classList.remove("open");
+    field.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".activity-type-field")) return;
+  activityBuilder.querySelectorAll(".activity-type-field.open").forEach((field) => {
+    field.classList.remove("open");
+    field.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+  });
+});
+
 document.querySelector("#profile-form").addEventListener("submit", (event) => {
   event.preventDefault();
   renderResults(parseProfile(event.currentTarget));
@@ -1994,6 +2075,7 @@ restartButton.addEventListener("click", () => {
   window.currentResults = [];
   window.currentProfile = null;
   document.querySelector("#profile-form").reset();
+  resetActivityBuilder();
   schoolSearch.value = "";
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
     sortButton.classList.remove("active");

@@ -295,51 +295,35 @@
                 <textarea id="shining-point" name="shiningPoint" rows="4" placeholder="A personal strength, story, project, responsibility, challenge, or community impact that makes you memorable."></textarea>
               </div>
               </div>
-              <fieldset class="activity-fieldset">
-                <legend>Extracurricular activities</legend>
-                <p class="field-help">Select all that apply, then briefly describe what you actually did for each selected activity.</p>
-                <div class="activity-grid">
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="leadership">
-                    <span>Leadership</span>
-                    <textarea name="activity_leadership" rows="3" placeholder="Role, team size, decisions, impact"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="service">
-                    <span>Community service</span>
-                    <textarea name="activity_service" rows="3" placeholder="Who you helped, hours, outcome"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="research">
-                    <span>Research / academic project</span>
-                    <textarea name="activity_research" rows="3" placeholder="Question, mentor, methods, findings"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="work">
-                    <span>Job / family responsibility</span>
-                    <textarea name="activity_work" rows="3" placeholder="Responsibilities, schedule, growth"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="arts">
-                    <span>Arts / writing / performance</span>
-                    <textarea name="activity_arts" rows="3" placeholder="Portfolio, shows, publications, practice"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="sports">
-                    <span>Athletics</span>
-                    <textarea name="activity_sports" rows="3" placeholder="Team, level, leadership, awards"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="entrepreneurship">
-                    <span>Entrepreneurship / initiative</span>
-                    <textarea name="activity_entrepreneurship" rows="3" placeholder="What you built, users, revenue, impact"></textarea>
-                  </label>
-                  <label class="activity-card">
-                    <input type="checkbox" name="activities" value="clubs">
-                    <span>Clubs / competitions</span>
-                    <textarea name="activity_clubs" rows="3" placeholder="Events, awards, contribution, consistency"></textarea>
-                  </label>
+              <fieldset class="activity-builder-fieldset">
+                <legend>Extracurricular activity</legend>
+                <p class="field-help">Add one activity at a time. Choose the type, then describe what the student actually did.</p>
+                <div class="activity-builder" id="activity-builder">
+                  <div class="activity-entry">
+                    <div class="activity-type-field">
+                      <span>Activity type</span>
+                      <input type="hidden" name="activityType" value="">
+                      <button class="activity-select-trigger" type="button" aria-expanded="false">Choose type</button>
+                      <div class="activity-select-menu">
+                        <button type="button" data-value="work">Work / job</button>
+                        <button type="button" data-value="volunteer">Volunteer service</button>
+                        <button type="button" data-value="leadership">Leadership</button>
+                        <button type="button" data-value="athletics">Athletics</button>
+                        <button type="button" data-value="research">Research / academic project</button>
+                        <button type="button" data-value="arts">Arts / writing / performance</button>
+                        <button type="button" data-value="entrepreneurship">Entrepreneurship / initiative</button>
+                        <button type="button" data-value="club">Club / competition</button>
+                        <button type="button" data-value="family">Family responsibility</button>
+                        <button type="button" data-value="other">Other</button>
+                      </div>
+                    </div>
+                    <label>
+                      Description
+                      <textarea name="activityDescription" rows="3" placeholder="Role, time spent, responsibility, result, or impact"></textarea>
+                    </label>
+                  </div>
                 </div>
+                <button class="add-activity-button" id="add-activity-button" type="button">Add activity</button>
               </fieldset>
               <fieldset>
                 <legend>Application materials completed</legend>
@@ -367,7 +351,7 @@
                 </svg>
               </div>
               <h3>Profile builder</h3>
-              <p>Use your strongest honest numbers and your real story. The calculator rewards character, environment fit, activities, and application quality instead of only test scores.</p>
+              <p>Use your strongest honest numbers and your real story. The calculator rewards character, extracurricular depth, environment fit, and application quality instead of only test scores.</p>
               <div class="guide-chip-row">
                 <span>Academics</span>
                 <span>Character</span>
