@@ -658,11 +658,11 @@ const activityTypeOptions = [
 function activityEntryTemplate() {
   return `
     <div class="activity-entry">
-      <div class="activity-type-field">
+      <div class="activity-type-field custom-select-field">
         <span>Activity type</span>
         <input type="hidden" name="activityType" value="">
-        <button class="activity-select-trigger" type="button" aria-expanded="false">Choose type</button>
-        <div class="activity-select-menu">
+        <button class="custom-select-trigger" type="button" aria-expanded="false">Choose type</button>
+        <div class="custom-select-menu">
           ${activityTypeOptions.map(([value, label]) => `<button type="button" data-value="${value}">${label}</button>`).join("")}
         </div>
       </div>
@@ -677,6 +677,26 @@ function activityEntryTemplate() {
 function resetActivityBuilder() {
   activityBuilder.innerHTML = activityEntryTemplate();
 }
+
+function resetCustomSelects(scope = document) {
+  scope.querySelectorAll(".custom-select-field").forEach((field) => {
+    const input = field.querySelector("input[type='hidden']");
+    const trigger = field.querySelector(".custom-select-trigger");
+    if (input) input.value = "";
+    if (trigger) {
+      trigger.textContent = trigger.dataset.placeholder || "Choose";
+      trigger.setAttribute("aria-expanded", "false");
+    }
+    field.classList.remove("open", "needs-selection");
+    field.querySelectorAll(".custom-select-menu button").forEach((button) => {
+      button.classList.remove("selected");
+    });
+  });
+}
+
+document.querySelectorAll(".custom-select-trigger").forEach((trigger) => {
+  trigger.dataset.placeholder = trigger.textContent;
+});
 
 async function loadRankingData() {
   try {
@@ -2006,16 +2026,16 @@ addActivityButton.addEventListener("click", () => {
   activityBuilder.insertAdjacentHTML("beforeend", activityEntryTemplate());
 });
 
-activityBuilder.addEventListener("click", (event) => {
-  const trigger = event.target.closest(".activity-select-trigger");
-  const option = event.target.closest(".activity-select-menu button");
+document.addEventListener("click", (event) => {
+  const trigger = event.target.closest(".custom-select-trigger");
+  const option = event.target.closest(".custom-select-menu button");
 
   if (trigger) {
-    const field = trigger.closest(".activity-type-field");
+    const field = trigger.closest(".custom-select-field");
     const isOpen = field.classList.contains("open");
-    activityBuilder.querySelectorAll(".activity-type-field.open").forEach((item) => {
+    document.querySelectorAll(".custom-select-field.open").forEach((item) => {
       item.classList.remove("open");
-      item.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+      item.querySelector(".custom-select-trigger").setAttribute("aria-expanded", "false");
     });
     field.classList.toggle("open", !isOpen);
     trigger.setAttribute("aria-expanded", String(!isOpen));
@@ -2023,27 +2043,34 @@ activityBuilder.addEventListener("click", (event) => {
   }
 
   if (option) {
-    const field = option.closest(".activity-type-field");
-    field.querySelector("input[name='activityType']").value = option.dataset.value;
-    field.querySelector(".activity-select-trigger").textContent = option.textContent;
-    field.querySelectorAll(".activity-select-menu button").forEach((button) => {
+    const field = option.closest(".custom-select-field");
+    field.querySelector("input[type='hidden']").value = option.dataset.value;
+    field.querySelector(".custom-select-trigger").textContent = option.textContent;
+    field.querySelectorAll(".custom-select-menu button").forEach((button) => {
       button.classList.toggle("selected", button === option);
     });
-    field.classList.remove("open");
-    field.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+    field.classList.remove("open", "needs-selection");
+    field.querySelector(".custom-select-trigger").setAttribute("aria-expanded", "false");
+    return;
   }
-});
 
-document.addEventListener("click", (event) => {
-  if (event.target.closest(".activity-type-field")) return;
-  activityBuilder.querySelectorAll(".activity-type-field.open").forEach((field) => {
+  if (event.target.closest(".custom-select-field")) return;
+  document.querySelectorAll(".custom-select-field.open").forEach((field) => {
     field.classList.remove("open");
-    field.querySelector(".activity-select-trigger").setAttribute("aria-expanded", "false");
+    field.querySelector(".custom-select-trigger").setAttribute("aria-expanded", "false");
   });
 });
 
 document.querySelector("#profile-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const missingSelect = [...event.currentTarget.querySelectorAll("[data-required-select]")]
+    .find((input) => !input.value);
+  if (missingSelect) {
+    const field = missingSelect.closest(".custom-select-field");
+    field?.classList.add("needs-selection");
+    field?.querySelector(".custom-select-trigger")?.focus();
+    return;
+  }
   renderResults(parseProfile(event.currentTarget));
 });
 
@@ -2075,6 +2102,7 @@ restartButton.addEventListener("click", () => {
   window.currentResults = [];
   window.currentProfile = null;
   document.querySelector("#profile-form").reset();
+  resetCustomSelects(document.querySelector("#profile-form"));
   resetActivityBuilder();
   schoolSearch.value = "";
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {

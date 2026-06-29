@@ -560,89 +560,98 @@ textarea {
     rgba(255, 255, 255, 0.78);
 }
 
+.custom-select-field,
 .activity-type-field {
   position: relative;
   display: grid;
-  gap: 8px;
+  gap: 7px;
   color: #30413d;
   font-size: 0.9rem;
   font-weight: 700;
 }
 
+.custom-select-field > span,
 .activity-type-field > span {
   color: #30413d;
 }
 
-.activity-select-trigger {
+.custom-select-trigger {
   position: relative;
-  min-height: 46px;
+  min-height: 40px;
   width: 100%;
   border: 1px solid rgba(38, 112, 100, 0.22);
   border-radius: 999px;
-  padding: 10px 44px 10px 14px;
+  padding: 8px 38px 8px 13px;
   color: #174c45;
   background:
-    radial-gradient(circle at 16px 50%, rgba(255, 191, 69, 0.5) 0 6px, transparent 7px),
+    radial-gradient(circle at 15px 50%, rgba(255, 191, 69, 0.46) 0 5px, transparent 6px),
     linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(232, 247, 255, 0.9));
-  box-shadow: 0 10px 22px rgba(23, 33, 31, 0.08);
+  box-shadow: 0 8px 16px rgba(23, 33, 31, 0.07);
   text-align: left;
-  font-weight: 950;
+  font-weight: 900;
+  font-size: 0.9rem;
 }
 
-.activity-select-trigger::after {
+.custom-select-trigger::after {
   content: "";
   position: absolute;
-  right: 16px;
+  right: 14px;
   top: 50%;
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-right: 2px solid #174c45;
   border-bottom: 2px solid #174c45;
   transform: translateY(-64%) rotate(45deg);
   transition: transform 160ms ease;
 }
 
-.activity-type-field.open .activity-select-trigger::after {
+.custom-select-field.open .custom-select-trigger::after {
   transform: translateY(-34%) rotate(225deg);
 }
 
-.activity-select-menu {
+.custom-select-menu {
   position: absolute;
   z-index: 6;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
   display: none;
-  max-height: 310px;
+  max-height: 260px;
   overflow: auto;
   border: 1px solid rgba(23, 76, 69, 0.16);
-  border-radius: 18px;
-  padding: 8px;
+  border-radius: 16px;
+  padding: 6px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 226, 0.98));
-  box-shadow: 0 22px 44px rgba(23, 33, 31, 0.2);
+  box-shadow: 0 18px 34px rgba(23, 33, 31, 0.18);
 }
 
-.activity-type-field.open .activity-select-menu {
+.custom-select-field.open .custom-select-menu {
   display: grid;
-  gap: 4px;
+  gap: 3px;
 }
 
-.activity-select-menu button {
-  min-height: 38px;
+.custom-select-menu button {
+  min-height: 34px;
   border: 0;
-  border-radius: 12px;
-  padding: 8px 10px;
+  border-radius: 11px;
+  padding: 7px 9px;
   color: #30413d;
   background: transparent;
   text-align: left;
   font-weight: 850;
+  font-size: 0.88rem;
 }
 
-.activity-select-menu button:hover,
-.activity-select-menu button.selected {
+.custom-select-menu button:hover,
+.custom-select-menu button.selected {
   color: #fff;
   background: linear-gradient(135deg, #267064, #174c45);
+}
+
+.custom-select-field.needs-selection .custom-select-trigger {
+  border-color: rgba(242, 101, 101, 0.72);
+  box-shadow: 0 0 0 3px rgba(242, 101, 101, 0.13);
 }
 
 .add-activity-button {

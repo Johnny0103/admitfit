@@ -182,80 +182,87 @@
                 AP, IB, or honors courses
                 <input name="rigor" type="number" min="0" max="30" step="1" required placeholder="8">
               </label>
-              <label>
-                Major interest
-                <select name="major" required>
-                  <option value="">Choose major</option>
-                  <option value="engineering">Engineering / Computer Science</option>
-                  <option value="business">Business / Economics</option>
-                  <option value="health">Health / Pre-med</option>
-                  <option value="arts">Arts / Design / Humanities</option>
-                  <option value="social">Social Science / Policy</option>
-                  <option value="undecided">Undecided</option>
-                </select>
-              </label>
-              <label>
-                Preferred region
-                <select name="region" required>
-                  <option value="">Choose region</option>
-                  <option value="northeast">Northeast</option>
-                  <option value="south">South</option>
-                  <option value="midwest">Midwest</option>
-                  <option value="west">West</option>
-                  <option value="any">Any region</option>
-                </select>
-              </label>
-              <label>
-                Preferred campus size
-                <select name="size" required>
-                  <option value="">Choose size</option>
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                  <option value="any">Any size</option>
-                </select>
-              </label>
-              <label>
-                Preferred school type
-                <select name="schoolType" required>
-                  <option value="">Choose type</option>
-                  <option value="public">Public school</option>
-                  <option value="private">Private school</option>
-                  <option value="any">No preference</option>
-                </select>
-              </label>
-              <label>
-                Geographical setting
-                <select name="setting" required>
-                  <option value="">Choose setting</option>
-                  <option value="city">City / urban energy</option>
-                  <option value="beach">Beach / coastal campus</option>
-                  <option value="college-town">College town</option>
-                  <option value="suburban">Suburban / quieter area</option>
-                  <option value="nature">Nature / outdoors nearby</option>
-                  <option value="any">No preference</option>
-                </select>
-              </label>
-              <label>
-                Essay readiness
-                <select name="essays" required>
-                  <option value="">Choose readiness</option>
-                  <option value="3">Needs major work</option>
-                  <option value="6">Solid draft</option>
-                  <option value="8">Strong and specific</option>
-                  <option value="10">Polished, memorable, and school-specific</option>
-                </select>
-              </label>
-              <label>
-                Recommendation letters
-                <select name="recommendations" required>
-                  <option value="">Choose status</option>
-                  <option value="3">Not requested</option>
-                  <option value="6">Requested</option>
-                  <option value="8">Confirmed</option>
-                  <option value="10">Confirmed and highly personal</option>
-                </select>
-              </label>
+              <div class="form-field custom-select-field">
+                <span>Major interest</span>
+                <input type="hidden" name="major" value="" data-required-select="Major interest">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose major</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="engineering">Engineering / Computer Science</button>
+                  <button type="button" data-value="business">Business / Economics</button>
+                  <button type="button" data-value="health">Health / Pre-med</button>
+                  <button type="button" data-value="arts">Arts / Design / Humanities</button>
+                  <button type="button" data-value="social">Social Science / Policy</button>
+                  <button type="button" data-value="undecided">Undecided</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Preferred region</span>
+                <input type="hidden" name="region" value="" data-required-select="Preferred region">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose region</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="northeast">Northeast</button>
+                  <button type="button" data-value="south">South</button>
+                  <button type="button" data-value="midwest">Midwest</button>
+                  <button type="button" data-value="west">West</button>
+                  <button type="button" data-value="any">Any region</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Preferred campus size</span>
+                <input type="hidden" name="size" value="" data-required-select="Preferred campus size">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose size</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="small">Small</button>
+                  <button type="button" data-value="medium">Medium</button>
+                  <button type="button" data-value="large">Large</button>
+                  <button type="button" data-value="any">Any size</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Preferred school type</span>
+                <input type="hidden" name="schoolType" value="" data-required-select="Preferred school type">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose type</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="public">Public school</button>
+                  <button type="button" data-value="private">Private school</button>
+                  <button type="button" data-value="any">No preference</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Geographical setting</span>
+                <input type="hidden" name="setting" value="" data-required-select="Geographical setting">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose setting</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="city">City / urban energy</button>
+                  <button type="button" data-value="beach">Beach / coastal campus</button>
+                  <button type="button" data-value="college-town">College town</button>
+                  <button type="button" data-value="suburban">Suburban / quieter area</button>
+                  <button type="button" data-value="nature">Nature / outdoors nearby</button>
+                  <button type="button" data-value="any">No preference</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Essay readiness</span>
+                <input type="hidden" name="essays" value="" data-required-select="Essay readiness">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose readiness</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="3">Needs major work</button>
+                  <button type="button" data-value="6">Solid draft</button>
+                  <button type="button" data-value="8">Strong and specific</button>
+                  <button type="button" data-value="10">Polished, memorable, and school-specific</button>
+                </div>
+              </div>
+              <div class="form-field custom-select-field">
+                <span>Recommendation letters</span>
+                <input type="hidden" name="recommendations" value="" data-required-select="Recommendation letters">
+                <button class="custom-select-trigger" type="button" aria-expanded="false">Choose status</button>
+                <div class="custom-select-menu">
+                  <button type="button" data-value="3">Not requested</button>
+                  <button type="button" data-value="6">Requested</button>
+                  <button type="button" data-value="8">Confirmed</button>
+                  <button type="button" data-value="10">Confirmed and highly personal</button>
+                </div>
+              </div>
               <div class="wide-field form-field">
                 <label for="shining-point">What is your shining point? <span>Optional. Everyone has one!</span></label>
                 <div class="shining-grid" aria-label="Shining point options">
@@ -300,11 +307,11 @@
                 <p class="field-help">Add one activity at a time. Choose the type, then describe what the student actually did.</p>
                 <div class="activity-builder" id="activity-builder">
                   <div class="activity-entry">
-                    <div class="activity-type-field">
+                    <div class="activity-type-field custom-select-field">
                       <span>Activity type</span>
                       <input type="hidden" name="activityType" value="">
-                      <button class="activity-select-trigger" type="button" aria-expanded="false">Choose type</button>
-                      <div class="activity-select-menu">
+                      <button class="custom-select-trigger" type="button" aria-expanded="false">Choose type</button>
+                      <div class="custom-select-menu">
                         <button type="button" data-value="work">Work / job</button>
                         <button type="button" data-value="volunteer">Volunteer service</button>
                         <button type="button" data-value="leadership">Leadership</button>
