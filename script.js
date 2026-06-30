@@ -1594,14 +1594,63 @@ function activityStrength(profile) {
   return clamp(26 + depthBonus + leadershipBonus + serviceBonus + shiningTypeBonus + shiningBonus, 12, 100);
 }
 
-function fitScore(profile, school) {
-  const majorFit = school.majors.includes(profile.major) ? 100 : profile.major === "undecided" ? 88 : 58;
-  const regionFit = profile.region === "any" || profile.region === school.region ? 100 : 62;
-  const sizeFit = profile.size === "any" || profile.size === school.size ? 100 : 68;
-  const typeFit = profile.schoolType === "any" || profile.schoolType === schoolType(school) ? 100 : 62;
-  const settingFit = profile.setting === "any" || profile.setting === schoolSetting(school) ? 100 : 64;
+function fitBreakdown(profile, school) {
   const characterFit = activityStrength(profile);
-  return Math.round(majorFit * 0.21 + regionFit * 0.14 + sizeFit * 0.09 + typeFit * 0.12 + settingFit * 0.14 + characterFit * 0.3);
+  return [
+    {
+      key: "major",
+      label: "major",
+      score: school.majors.includes(profile.major) ? 100 : profile.major === "undecided" ? 88 : 58,
+      weight: 0.22,
+      positive: school.majors.includes(profile.major) || profile.major === "undecided",
+      detail: school.majors.includes(profile.major) ? "academic interest is supported" : "academic interest is less direct"
+    },
+    {
+      key: "region",
+      label: "region",
+      score: profile.region === "any" || profile.region === school.region ? 100 : 62,
+      weight: 0.12,
+      positive: profile.region === "any" || profile.region === school.region,
+      detail: `${labelize(school.region)} location`
+    },
+    {
+      key: "size",
+      label: "campus size",
+      score: profile.size === "any" || profile.size === school.size ? 100 : 68,
+      weight: 0.08,
+      positive: profile.size === "any" || profile.size === school.size,
+      detail: `${labelize(school.size)} campus`
+    },
+    {
+      key: "type",
+      label: "school type",
+      score: profile.schoolType === "any" || profile.schoolType === schoolType(school) ? 100 : 62,
+      weight: 0.11,
+      positive: profile.schoolType === "any" || profile.schoolType === schoolType(school),
+      detail: `${labelize(schoolType(school))} school`
+    },
+    {
+      key: "setting",
+      label: "setting",
+      score: profile.setting === "any" || profile.setting === schoolSetting(school) ? 100 : 64,
+      weight: 0.14,
+      positive: profile.setting === "any" || profile.setting === schoolSetting(school),
+      detail: `${labelize(schoolSetting(school))} environment`
+    },
+    {
+      key: "character",
+      label: "activities and character",
+      score: characterFit,
+      weight: 0.33,
+      positive: characterFit >= 72,
+      detail: characterFit >= 72 ? "activities and shining point add depth" : "profile story needs more proof"
+    }
+  ];
+}
+
+function fitScore(profile, school) {
+  const components = fitBreakdown(profile, school);
+  return Math.round(components.reduce((sum, item) => sum + item.score * item.weight, 0));
 }
 
 function admissionChance(profile, school) {
@@ -1611,9 +1660,9 @@ function admissionChance(profile, school) {
   const application = character * 0.42 + (profile.essays * 10) * 0.32 + (profile.recommendations * 10) * 0.26;
   const readiness = profile.materials.length / Object.keys(materialMap).length;
   const fit = fitScore(profile, school);
-  const applicantStrength = academic * 0.4 + tests * 0.18 + application * 0.25 + fit * 0.1 + readiness * 100 * 0.07;
-  const selectivityDrag = (100 - school.admitRate) * 0.42;
-  const chance = school.admitRate + (applicantStrength - 62) * 0.58 - selectivityDrag * 0.18;
+  const applicantStrength = academic * 0.38 + tests * 0.16 + application * 0.27 + fit * 0.12 + readiness * 100 * 0.07;
+  const selectivityDrag = (100 - school.admitRate) * 0.4;
+  const chance = school.admitRate + (applicantStrength - 62) * 0.6 - selectivityDrag * 0.18;
   return Math.round(clamp(chance, 2, 92));
 }
 
@@ -1631,8 +1680,48 @@ function resultForSchool(profile, school) {
     match,
     chance,
     category: categorize(chance, school),
+    explanation: buildMatchExplanation(profile, school, match, chance),
     strengths: buildStrengths(profile, school, match, chance),
     checklist: buildChecklist(profile, school)
+  };
+}
+
+function buildMatchExplanation(profile, school, match, chance) {
+  const breakdown = fitBreakdown(profile, school);
+  const positives = breakdown
+    .filter((item) => item.positive || item.score >= 82)
+    .sort((a, b) => (b.score * b.weight) - (a.score * a.weight))
+    .slice(0, 3);
+  const gaps = breakdown
+    .filter((item) => !item.positive && item.score < 78)
+    .sort((a, b) => (a.score * a.weight) - (b.score * b.weight))
+    .slice(0, 2);
+  const academic = academicStrength(profile, school);
+  const testing = testStrength(profile, school);
+  const academicLine = academic >= 78
+    ? "Academics are close to or above this school's profile."
+    : academic >= 58
+      ? "Academics are workable, but stronger rigor or grades would help."
+      : "Academics are the main area to strengthen.";
+  const testingLine = profile.act || profile.sat
+    ? testing >= 72 ? "Testing supports the application." : "Testing is below the school benchmark."
+    : "A test-optional strategy may matter here.";
+  const chanceLine = chance >= school.admitRate + 8
+    ? "Your profile lifts the estimate above the baseline admit rate."
+    : chance <= school.admitRate - 8
+      ? "Selectivity pulls the estimate below the baseline admit rate."
+      : "The estimate stays close to the school's baseline admit rate.";
+  const driverText = positives.length
+    ? positives.map((item) => item.label).join(", ")
+    : "overall profile balance";
+  const gapText = gaps.length
+    ? `Watch ${gaps.map((item) => item.label).join(" and ")}.`
+    : "No major fit gap stands out.";
+  return {
+    summary: `${match}% fit because of ${driverText}. ${chanceLine}`,
+    academic: academicLine,
+    testing: testingLine,
+    gaps: gapText
   };
 }
 
@@ -1790,6 +1879,17 @@ function renderResultCards() {
       <div class="score-row">
         ${scoreDial("Fit", item.match, "fit")}
         ${scoreDial("Admit", item.chance, "admit")}
+      </div>
+      <div class="match-explanation">
+        <div>
+          <span>How you match</span>
+          <p>${item.explanation.summary}</p>
+        </div>
+        <ul>
+          <li>${item.explanation.academic}</li>
+          <li>${item.explanation.testing}</li>
+          <li>${item.explanation.gaps}</li>
+        </ul>
       </div>
       <div class="details-grid">
         <div class="detail-box">

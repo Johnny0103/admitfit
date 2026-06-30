@@ -1957,6 +1957,48 @@ legend {
   --dial-color: #33699a;
 }
 
+.match-explanation {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(220px, 1fr);
+  gap: 12px;
+  margin: 0 0 14px;
+  border: 1px solid rgba(38, 112, 100, 0.14);
+  border-radius: 8px;
+  padding: 13px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 191, 69, 0.2) 0 56px, transparent 58px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 255, 251, 0.82));
+}
+
+.match-explanation span {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 9px;
+  color: #174c45;
+  background: rgba(255, 191, 69, 0.24);
+  font-size: 0.74rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.match-explanation p {
+  margin: 8px 0 0;
+  color: #17211f;
+  font-weight: 850;
+  line-height: 1.42;
+}
+
+.match-explanation ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #52615d;
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
 .next-board {
   position: relative;
   overflow: hidden;
@@ -2203,6 +2245,7 @@ legend {
   .form-grid,
   .activity-entry,
   .score-row,
+  .match-explanation,
   .details-grid,
   .next-grid,
   .note-list,
