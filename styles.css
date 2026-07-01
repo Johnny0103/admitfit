@@ -50,9 +50,9 @@ button {
   place-items: end center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 16% 14%, rgba(255, 255, 255, 0.36) 0 170px, transparent 172px),
-    linear-gradient(135deg, #f4dc94 0%, #dcae55 44%, #70c8c7 100%),
-    #f4dc94;
+    radial-gradient(circle at 16% 14%, rgba(255, 255, 255, 0.43) 0 170px, transparent 172px),
+    linear-gradient(135deg, #fae7ac 0%, #edc369 44%, #80d7d5 100%),
+    #fae7ac;
   transition: background 320ms ease;
 }
 
@@ -157,7 +157,7 @@ button {
   height: 100%;
   object-fit: cover;
   filter:
-    brightness(calc(1.05 - (var(--login-dim, 0) * 0.24)))
+    brightness(calc(1.11 - (var(--login-dim, 0) * 0.26)))
     contrast(calc(1.04 + (var(--login-dim, 0) * 0.06)))
     saturate(calc(1.08 - (var(--login-dim, 0) * 0.08)));
   transition: filter 320ms ease, transform 520ms ease;
@@ -172,8 +172,8 @@ button {
 
 .app-shell:not(.focus-mode) .hero-panel::after {
   background:
-    linear-gradient(135deg, rgba(58, 38, 8, 0.1) 0%, rgba(82, 58, 18, 0.08) 48%, rgba(8, 58, 59, 0.07) 100%),
-    linear-gradient(180deg, rgba(255, 246, 205, 0.08), rgba(36, 24, 8, 0.12));
+    linear-gradient(135deg, rgba(58, 38, 8, 0.06) 0%, rgba(82, 58, 18, 0.05) 48%, rgba(8, 58, 59, 0.05) 100%),
+    linear-gradient(180deg, rgba(255, 246, 205, 0.12), rgba(36, 24, 8, 0.08));
   mix-blend-mode: normal;
   transition: background 320ms ease;
 }
