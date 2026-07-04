@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AdmitFit</title>
-    <link rel="stylesheet" href="styles.css?v=hero-light-1">
+    <link rel="stylesheet" href="styles.css?v=ranking-date-1">
   </head>
   <body>
     <main class="app-shell">
@@ -117,7 +117,10 @@
                   <path d="M21 62h42" stroke="#ffbf45" stroke-width="7" stroke-linecap="round"/>
                 </svg>
               </span>
-              <strong>Verified ranking view</strong>
+              <strong class="mini-feature-title">
+                Verified ranking view
+                <span class="updated-pill" id="ranking-updated-label">Updated Jun 8, 2026</span>
+              </strong>
               <span>Browse by current U.S. News rank with freshness notes.</span>
             </button>
             <button class="mini-feature mini-feature-popular" type="button" data-sort="popular">
@@ -141,7 +144,6 @@
                 <input id="school-search" type="search" placeholder="Live search U.S. colleges by school, state, region, major, or website">
               </label>
             </div>
-            <div class="ranking-notice" id="ranking-notice"></div>
             <div class="school-picker" id="school-picker"></div>
           </div>
           <div class="form-actions">
@@ -263,44 +265,6 @@
                   <button type="button" data-value="10">Confirmed and highly personal</button>
                 </div>
               </div>
-              <div class="wide-field form-field">
-                <label for="shining-point">What is your shining point? <span>Optional. Everyone has one!</span></label>
-                <div class="shining-grid" aria-label="Shining point options">
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="athletics">
-                    <span>Athletics</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="leadership">
-                    <span>Leadership</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="service">
-                    <span>Service</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="research">
-                    <span>Research</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="creativity">
-                    <span>Creativity</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="resilience">
-                    <span>Resilience</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="initiative">
-                    <span>Initiative</span>
-                  </label>
-                  <label class="shining-chip">
-                    <input type="checkbox" name="shiningTypes" value="community">
-                    <span>Community impact</span>
-                  </label>
-                </div>
-                <textarea id="shining-point" name="shiningPoint" rows="4" placeholder="A personal strength, story, project, responsibility, challenge, or community impact that makes you memorable."></textarea>
-              </div>
               </div>
               <fieldset class="activity-builder-fieldset">
                 <legend>Extracurricular activity</legend>
@@ -403,6 +367,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=match-explain-1"></script>
+    <script src="script.js?v=ranking-date-1"></script>
   </body>
 </html>

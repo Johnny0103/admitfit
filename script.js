@@ -624,7 +624,7 @@ const schoolPicker = document.querySelector("#school-picker");
 const schoolSearch = document.querySelector("#school-search");
 const schoolResultsPanel = document.querySelector("#school-results-panel");
 const schoolPreview = document.querySelector("#school-preview");
-const rankingNotice = document.querySelector("#ranking-notice");
+const rankingUpdatedLabel = document.querySelector("#ranking-updated-label");
 const selectedCount = document.querySelector("#selected-count");
 const notePage = document.querySelector("#note-page");
 const resultsGrid = document.querySelector("#results-grid");
@@ -709,6 +709,7 @@ async function loadRankingData() {
     rankingMetadata.verifiedDate = data.verifiedDate || rankingMetadata.verifiedDate;
     rankingMetadata.releaseDate = data.releaseDate || rankingMetadata.releaseDate;
     rankingMetadata.sources = data.sources || rankingMetadata.sources;
+    updateRankingUpdatedLabel();
 
     for (const school of schools) {
       const ranking = data.schools?.[school.name];
@@ -721,6 +722,7 @@ async function loadRankingData() {
     if (!views.results.classList.contains("hidden")) renderResultCards();
   } catch (error) {
     console.warn("Using bundled ranking data because external ranking data could not be loaded.", error);
+    updateRankingUpdatedLabel();
   }
 }
 
@@ -744,6 +746,12 @@ function formatDate(value) {
     day: "numeric",
     year: "numeric"
   }).format(new Date(`${value}T12:00:00`));
+}
+
+function updateRankingUpdatedLabel() {
+  if (rankingUpdatedLabel) {
+    rankingUpdatedLabel.textContent = `Updated ${formatDate(rankingMetadata.verifiedDate)}`;
+  }
 }
 
 function daysSince(value) {
@@ -1094,19 +1102,6 @@ function updateSelectionCount() {
   if (selectedCount) selectedCount.textContent = state.selectedSchools.length;
 }
 
-function renderRankingNotice() {
-  const age = daysSince(rankingMetadata.verifiedDate);
-  const status = age === 0
-    ? "Rankings were verified today."
-    : `Rankings were last verified ${age} day${age === 1 ? "" : "s"} ago; re-check U.S. News before making final decisions.`;
-
-  rankingNotice.innerHTML = `
-    <strong><a href="${rankingMetadata.sourceUrl}" target="_blank" rel="noreferrer">${rankingMetadata.source}</a></strong>
-    <span>${status} Data release: ${formatDate(rankingMetadata.releaseDate)}. App check: ${formatDate(rankingMetadata.verifiedDate)}.</span>
-    <span class="ranking-sources">Sources used: ${rankingMetadata.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer">${source.label}</a>`).join(" · ")}</span>
-  `;
-}
-
 function showView(name, title) {
   Object.values(views).forEach((view) => view.classList.add("hidden"));
   views[name].classList.remove("hidden");
@@ -1157,7 +1152,6 @@ function resetSchoolBrowse() {
   state.rankingExpanded = false;
   schoolSearch.value = "";
   schoolPicker.innerHTML = "";
-  rankingNotice.innerHTML = "";
   schoolResultsPanel.classList.add("hidden");
   document.querySelectorAll(".mini-feature[data-sort]").forEach((sortButton) => {
     sortButton.classList.remove("active");
@@ -1380,7 +1374,6 @@ function renderSchoolPreview(index) {
 }
 
 async function renderSchoolPicker() {
-  renderRankingNotice();
   updateSelectionCount();
   const query = state.schoolSearch.trim().toLowerCase();
   const token = ++schoolSearchToken;
@@ -1426,7 +1419,7 @@ async function renderSchoolPicker() {
   const shownSchools = visibleSchools.slice(0, rankingLimit);
   const remainingCount = Math.max(0, totalMatches - shownSchools.length);
   const resultSummary = totalMatches && usingVerifiedRanking && !query
-    ? `<p class="school-result-count">Verified ranking view: ${state.rankingExpanded ? `Top 100 + ties (${verifiedRankingEntries.length})` : "Top 50"} National Universities shown.</p>`
+    ? `<p class="school-result-count">Verified ranking view: ${state.rankingExpanded ? `Top 100 + ties (${verifiedRankingEntries.length})` : "Top 50"} National Universities shown. <span>Updated ${formatDate(rankingMetadata.verifiedDate)}</span></p>`
     : totalMatches
     ? `<p class="school-result-count">${shownSchools.length} of ${totalMatches} schools shown${directoryPoolAdded ? " from the expanded source" : ""}.</p>`
     : "";
@@ -1545,8 +1538,6 @@ function parseProfile(form) {
     activities,
     essays: Number(data.get("essays")),
     recommendations: Number(data.get("recommendations")),
-    shiningTypes: data.getAll("shiningTypes"),
-    shiningPoint: String(data.get("shiningPoint") || "").trim(),
     materials: data.getAll("materials")
   };
 }
@@ -1589,9 +1580,8 @@ function activityStrength(profile) {
   const leadershipBonus = types.includes("leadership") || types.includes("entrepreneurship") ? 10 : 0;
   const serviceBonus = types.includes("volunteer") || types.includes("work") || types.includes("family") ? 8 : 0;
   const depthBonus = Math.min(28, typedCount * 7) + Math.min(24, describedCount * 8);
-  const shiningTypeBonus = Math.min(14, (profile.shiningTypes || []).length * 4);
-  const shiningBonus = profile.shiningPoint.length >= 35 ? 12 : profile.shiningPoint.length ? 6 : 0;
-  return clamp(26 + depthBonus + leadershipBonus + serviceBonus + shiningTypeBonus + shiningBonus, 12, 100);
+  const evidenceBonus = activities.some((activity) => activity.description.length >= 55) ? 10 : describedCount ? 5 : 0;
+  return clamp(28 + depthBonus + leadershipBonus + serviceBonus + evidenceBonus, 12, 100);
 }
 
 function fitBreakdown(profile, school) {
@@ -1643,7 +1633,7 @@ function fitBreakdown(profile, school) {
       score: characterFit,
       weight: 0.33,
       positive: characterFit >= 72,
-      detail: characterFit >= 72 ? "activities and shining point add depth" : "profile story needs more proof"
+      detail: characterFit >= 72 ? "activities add depth and character evidence" : "activity evidence needs more detail"
     }
   ];
 }
@@ -1734,7 +1724,6 @@ function buildStrengths(profile, school, match, chance) {
   if (profile.setting === "any" || profile.setting === schoolSetting(school)) items.push("Geographical setting preference matches the campus environment.");
   if ((profile.activities || []).length >= 2) items.push("Activity list shows range beyond classroom performance.");
   if ((profile.activities || []).some((activity) => activity.description.length >= 22)) items.push("Activity descriptions add real context beyond scores.");
-  if (profile.shiningTypes?.length || profile.shiningPoint) items.push("Your shining point gives the application a personal theme to build around.");
   if (profile.gpa >= school.avgGpa) items.push("GPA is at or above this school's typical profile.");
   if (profile.sat >= school.avgSat) items.push("SAT score is at or above the school benchmark used here.");
   if (!items.length) items.push("This school remains possible, but the profile has several fit gaps to strengthen.");
@@ -1802,11 +1791,6 @@ function buildImprovementPlan(profile, result) {
     actions.push("Add at least one activity with type, role, responsibility, and impact.");
   } else if (!(profile.activities || []).some((activity) => activity.description.length >= 35)) {
     actions.push("Strengthen an activity description with action, time spent, result, and what it proves.");
-  }
-  if (!profile.shiningTypes?.length && !profile.shiningPoint) {
-    actions.push("Define your shining point: everyone has one! Turn it into an essay theme.");
-  } else if (profile.shiningTypes?.length && profile.shiningPoint.length < 35) {
-    actions.push(`Turn ${profile.shiningTypes.slice(0, 2).map(labelize).join(" and ").toLowerCase()} into a specific story with proof.`);
   }
   if (profile.essays < 8) {
     actions.push("Revise essays until the school can hear your voice and your reason for fit.");
@@ -2211,4 +2195,5 @@ restartButton.addEventListener("click", () => {
   showView("choice", "Choose a path");
 });
 
+updateRankingUpdatedLabel();
 loadRankingData();
