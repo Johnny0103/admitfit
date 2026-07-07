@@ -1106,6 +1106,10 @@ function showView(name, title) {
   Object.values(views).forEach((view) => view.classList.add("hidden"));
   views[name].classList.remove("hidden");
   viewTitle.textContent = title;
+  viewTitle.nextElementSibling?.classList.contains("view-subtitle") && viewTitle.nextElementSibling.remove();
+  if (name === "profile") {
+    viewTitle.insertAdjacentHTML("afterend", `<p class="view-subtitle">be honest</p>`);
+  }
   restartButton.classList.toggle("hidden", name === "login");
   yourListButton.classList.toggle("hidden", !["school", "schoolPreview", "list", "profile", "results", "next"].includes(name));
   appShell.classList.toggle("focus-mode", name !== "login");
