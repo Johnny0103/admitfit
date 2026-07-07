@@ -1588,6 +1588,88 @@ function activityStrength(profile) {
   return clamp(28 + depthBonus + leadershipBonus + serviceBonus + evidenceBonus, 12, 100);
 }
 
+function activityTheme(profile) {
+  const activities = profile.activities || [];
+  const typeLabels = activities
+    .filter((activity) => activity.type)
+    .map((activity) => labelize(activity.type));
+  if (!typeLabels.length) return "not much activity evidence yet";
+  const uniqueTypes = [...new Set(typeLabels)].slice(0, 3);
+  return uniqueTypes.join(", ").toLowerCase();
+}
+
+function schoolAcademicTheme(school) {
+  const text = school.traits.join(" ").toLowerCase();
+  if (text.includes("stem") || text.includes("engineering") || text.includes("computer science")) return "STEM and technical problem-solving";
+  if (text.includes("business") || text.includes("alumni") || text.includes("professional") || text.includes("career")) return "career direction and professional ambition";
+  if (text.includes("creative") || text.includes("arts") || text.includes("design") || text.includes("journalism")) return "creative work and original voice";
+  if (text.includes("research") || text.includes("life sciences") || text.includes("science")) return "research curiosity and academic depth";
+  if (text.includes("service") || text.includes("jesuit") || text.includes("community")) return "community impact and values";
+  if (text.includes("global") || text.includes("international")) return "global perspective and independence";
+  if (text.includes("honors") || text.includes("flagship") || text.includes("large")) return "initiative inside a large opportunity-rich campus";
+  return "academic purpose and campus contribution";
+}
+
+function selectivityPhrase(school, chance) {
+  if (school.admitRate <= 8) return chance >= 20 ? "extremely selective, but your profile gives you a visible case" : "extremely selective, so this remains a serious reach";
+  if (school.admitRate <= 18) return chance >= school.admitRate ? "selective, with your profile competing around or above its baseline" : "selective, with admission pressure still pulling hard";
+  if (school.admitRate <= 35) return chance >= 45 ? "competitive, but your profile has room to stand out" : "competitive, so fit needs to be very clear";
+  return chance >= 60 ? "more accessible if the application is complete and specific" : "accessible on paper, but the application still needs stronger proof";
+}
+
+function buildSchoolAnalysis(profile, school, match, chance) {
+  const traits = school.traits.slice(0, 3);
+  const setting = labelize(schoolSetting(school));
+  const type = labelize(schoolType(school));
+  const majorFit = school.majors.includes(profile.major) || profile.major === "undecided";
+  const regionFit = profile.region === "any" || profile.region === school.region;
+  const sizeFit = profile.size === "any" || profile.size === school.size;
+  const settingFit = profile.setting === "any" || profile.setting === schoolSetting(school);
+  const typeFit = profile.schoolType === "any" || profile.schoolType === schoolType(school);
+  const academic = academicStrength(profile, school);
+  const character = activityStrength(profile);
+  const activityText = activityTheme(profile);
+  const academicTheme = schoolAcademicTheme(school);
+  const matchedPreferences = [
+    majorFit ? "major" : "",
+    regionFit ? "region" : "",
+    sizeFit ? "campus size" : "",
+    settingFit ? "setting" : "",
+    typeFit ? "public/private preference" : ""
+  ].filter(Boolean);
+  const missedPreferences = [
+    majorFit ? "" : "major pathway",
+    regionFit ? "" : "region",
+    sizeFit ? "" : "campus size",
+    settingFit ? "" : "setting",
+    typeFit ? "" : "school type"
+  ].filter(Boolean);
+
+  const schoolRead = `${school.name} looks for a student who can use its ${traits.join(", ").toLowerCase()} in a ${setting.toLowerCase()} ${type.toLowerCase()} environment.`;
+  const studentRead = matchedPreferences.length
+    ? `Your profile connects through ${matchedPreferences.slice(0, 3).join(", ")} and your ${activityText}.`
+    : `Your current preferences do not strongly mirror this campus yet, so the application needs a clearer personal reason for ${school.name}.`;
+  const admissionRead = `${labelize(itemCategoryFromChance(chance, school))} read: ${selectivityPhrase(school, chance)}. Academics are ${academic >= 78 ? "a strength" : academic >= 58 ? "usable but not dominant" : "the biggest pressure point"}, while activities are ${character >= 72 ? "helping your character case" : "still light on evidence"}.`;
+  const applicationAngle = `Best angle: show ${academicTheme}${activityText === "not much activity evidence yet" ? " with concrete activities added to the profile" : ` through ${activityText}`}.`;
+  const risk = missedPreferences.length
+    ? `Watch ${missedPreferences.slice(0, 2).join(" and ")} fit.`
+    : match >= 82 && chance < 25
+      ? "Fit is strong, but selectivity is the main barrier."
+      : "No major preference gap stands out.";
+
+  return {
+    schoolRead,
+    studentRead,
+    admissionRead,
+    applicationAngle,
+    risk
+  };
+}
+
+function itemCategoryFromChance(chance, school) {
+  return categorize(chance, school);
+}
+
 function fitBreakdown(profile, school) {
   const characterFit = activityStrength(profile);
   return [
@@ -1674,6 +1756,7 @@ function resultForSchool(profile, school) {
     match,
     chance,
     category: categorize(chance, school),
+    analysis: buildSchoolAnalysis(profile, school, match, chance),
     explanation: buildMatchExplanation(profile, school, match, chance),
     strengths: buildStrengths(profile, school, match, chance),
     checklist: buildChecklist(profile, school)
@@ -1870,14 +1953,21 @@ function renderResultCards() {
       </div>
       <div class="match-explanation">
         <div>
-          <span>How you match</span>
-          <p>${item.explanation.summary}</p>
+          <span>School DNA</span>
+          <p>${item.analysis.schoolRead}</p>
         </div>
-        <ul>
-          <li>${item.explanation.academic}</li>
-          <li>${item.explanation.testing}</li>
-          <li>${item.explanation.gaps}</li>
-        </ul>
+        <div>
+          <span>Your match</span>
+          <p>${item.analysis.studentRead}</p>
+        </div>
+        <div>
+          <span>Admission read</span>
+          <p>${item.analysis.admissionRead}</p>
+        </div>
+        <div>
+          <span>Application angle</span>
+          <p>${item.analysis.applicationAngle} ${item.analysis.risk}</p>
+        </div>
       </div>
       <div class="details-grid">
         <div class="detail-box">
